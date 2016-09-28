@@ -1,3 +1,5 @@
+package
+
 import javax.swing.*;
 
 public class Space extends JFrame{

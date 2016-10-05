@@ -1,4 +1,4 @@
-package spacex33;
+package src;
 
 import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;

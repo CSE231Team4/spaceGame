@@ -1,4 +1,4 @@
-package spacex33;
+package src;
 
 public interface Obstacle {
     public int getWidth();

@@ -13,7 +13,7 @@ public class Asteroid extends Node implements Obstacle {
     private int width; //width of the image
     private int height; //height of the image
     private Image asteroid_image = new Image("file:resource/asteroid.png", true); //sets the path of the asteroid image
-    private ImageView astImage = new ImageView(asteroid_image); //sets up the imageviewer for the asteroid image
+    public ImageView astImage = new ImageView(asteroid_image); //sets up the imageviewer for the asteroid image
     
     final int EDGE_OBSTACLE_GAP = 15; //the gap on the edge is 5px larger than the ship gap because it takes 5px extra on one side
     final int MID_OBSTACLE_GAP = EDGE_OBSTACLE_GAP + 5; //the gaps beween lanes in the middle are 5px bigger because it takes 5 off both sides

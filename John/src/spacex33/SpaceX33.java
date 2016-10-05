@@ -68,7 +68,7 @@ public class SpaceX33 extends Application {
         astImg.setTranslateX(obs_location); //sets the x coordinate of the obstacle to obs_location
 
         root.getChildren().add(astImg); //adds the graphic for the asteroid to the root
-        spawnCount++; //adds 1 to spawnCount when new obsticle is created
+        spawnCount++; //adds 1 to spawnCount when new obstacle is created
         return astImg;
     }
     
@@ -79,6 +79,7 @@ public class SpaceX33 extends Application {
     private void onUpdate() {
         for (Node asteroid : asteroids){
             asteroid.setTranslateY(asteroid.getTranslateY() + speed); //translates the asteroid down 12 pixels every update
+            asteroid.setRotate(asteroid.getRotate() + speed);
             if(asteroid.getTranslateY() > 900){              
                 System.out.println(asteroids.size());
                 root.getChildren().remove(asteroid);

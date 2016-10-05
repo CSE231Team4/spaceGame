@@ -21,8 +21,8 @@ public class Asteroid extends Node implements Obstacle {
     
     public Asteroid(){
         super();
-        width = 95;
-        height = 95;
+        width = 50;
+        height = 50;
         //default width and height are 95 because that's what we're using, but this is subject to change
     }
     

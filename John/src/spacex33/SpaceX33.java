@@ -79,10 +79,11 @@ public class SpaceX33 extends Application {
     private void onUpdate() {
         for (Node asteroid : asteroids){
             asteroid.setTranslateY(asteroid.getTranslateY() + speed); //translates the asteroid down 12 pixels every update
-            if(asteroid.getTranslateY() > 850){
-                asteroid = null;
+            if(asteroid.getTranslateY() > 900){              
+                System.out.println(asteroids.size());
+                root.getChildren().remove(asteroid);
                 asteroids.remove(asteroid);
-                //this was my attempt at saving memory... doesn't work too well but makes it slightly more efficient
+                  //this was my attempt at saving memory... doesn't work too well but makes it slightly more efficient
             }
         }
 
@@ -91,15 +92,17 @@ public class SpaceX33 extends Application {
         }
 
         checkState();
-        if (spawnCount == 10) { //initial condition to add to spawnRate
-            spawnRate = spawnRate + 0.01; //add to spawnRate if conditions are met
+        if (spawnRate < 2.0) {//sets limit on spawning
+        if (spawnCount == 25) { //initial condition to add to spawnRate
+            spawnRate = spawnRate + 0.005; //add to spawnRate if conditions are met
             spawnCount = 0; // reset spawn counter
             speedAdd = speedAdd + 1; // add 1 to speed add for every 10 spawn count
-                if (speedAdd == 15) { //condition to add to speed of obsticles
+                if (speedAdd == 1) { //condition to add to speed of obsticles
                     speed = speed + 5; //add 5 to speed of falling obsticles
                     speedAdd = 0; //reset speed add counter
                 }
         }
+      }
     }
     
     private void checkState() {
@@ -133,7 +136,7 @@ public class SpaceX33 extends Application {
                 //the above section is used for printing the "YOU LOSE" font
                 return;
             }
-        }
+        } 
     }
     
     @Override

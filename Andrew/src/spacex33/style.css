@@ -13,7 +13,7 @@ and open the template in the editor.
     #pane{
         -fx-background-image: url("file:resource/space_background.png");
         -fx-background-repeat: stretch;   
-        -fx-background-size: 700 900;
+        -fx-background-size: 750 950;
         -fx-background-position: center center;
     }
 

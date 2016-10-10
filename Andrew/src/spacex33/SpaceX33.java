@@ -48,7 +48,7 @@ public class SpaceX33 extends Application {
     private int speed = 5; //speed of asteroids descending toward ship
     private int spawnCount = 0; //counts amount of asteroids spawned in
     private double speedAdd = 0; //used in algorithm to calculate difficulty. speedAdd = 1/10 of spawnCount
-    private double spawnRate = 0.2; //spawn in speed of asteroids
+    private double spawnRate = 0.01; //spawn in speed of asteroids
     private int iframes = 0;
     private long istart = 0;
     private int shipFlash = 0;
@@ -136,18 +136,18 @@ public class SpaceX33 extends Application {
             }
         }
               if (spawnRate < 2.0) {//sets limit on spawning
-                 if (spawnCount == 25) { //initial condition to add to spawnRate
+                 if (spawnCount == 20) { //initial condition to add to spawnRate
                     spawnRate = spawnRate + 0.005; //add to spawnRate if conditions are met
                     spawnCount = 0; // reset spawn counter
                     speedAdd = speedAdd + 1; // add 1 to speed add for every 10 spawn count
-                if (speedAdd == 1) { //condition to add to speed of obsticles
+                if (speedAdd == 2) { //condition to add to speed of obsticles
                     speed = speed + 2; //add 5 to speed of falling obsticles
                     speedAdd = 0; //reset speed add counter
                 }
             }   
         }
 
-        if (Math.random() < 0.01) {
+        if (Math.random() < spawnRate) {
             asteroids.add(spawnObstacle()); //randomly spawns an obstacle, and adds the graphic for the asteroid to the asteroid list
             //hitboxes.add(spawnHitBox());
         }
@@ -184,7 +184,8 @@ public class SpaceX33 extends Application {
                     }
                 
                     if(shipObj.getHealth() <= 0){
-                        enableShip = false;
+                        shipDisplay.setVisible(false);
+                       enableShip = false;
                         timer.stop(); //stops the timer so asteroids no longer spawn
                 
                         String lose = "YOU LOSE";

@@ -13,6 +13,7 @@ import javafx.scene.shape.Circle;
 public class Asteroid extends Node implements Obstacle {
     private int width; //width of the image
     private int height; //height of the image
+    private int lane;
     private Image asteroid_image = new Image("file:resource/asteroid.png", true); //sets the path of the asteroid image
     private ImageView astImage = new ImageView(asteroid_image); //sets up the imageviewer for the asteroid image
     private Circle hitBox = new Circle();
@@ -27,6 +28,7 @@ public class Asteroid extends Node implements Obstacle {
         height = 95;
         //default width and height are 95 because that's what we're using, but this is subject to change
         hitBox.setRadius(width/2);
+        lane = 0;
     }
     
     public Asteroid(int w, int h){
@@ -34,6 +36,7 @@ public class Asteroid extends Node implements Obstacle {
         width = w;
         height = h;
         hitBox.setRadius(width/2);
+        lane = 0;
     }
     
     public ImageView initAsteroidGraphics(){
@@ -59,6 +62,10 @@ public class Asteroid extends Node implements Obstacle {
         return MID_OBSTACLE_GAP;
     }
     
+    public int getLane(){
+        return lane;
+    }
+    
     public Circle initHitBox(){
         return hitBox;
     }
@@ -73,6 +80,10 @@ public class Asteroid extends Node implements Obstacle {
     
     public void setHeight(int h){
         height = h;
+    }
+    
+    public void setLane(int l){
+        lane = l;
     }
     
     @Override

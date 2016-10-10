@@ -14,8 +14,11 @@ public class Asteroid extends Node implements Obstacle {
     private int width; //width of the image
     private int height; //height of the image
     private int lane;
-    private Image asteroid_image = new Image("file:resource/asteroid.png", true); //sets the path of the asteroid image
-    private ImageView astImage = new ImageView(asteroid_image); //sets up the imageviewer for the asteroid image
+    private int guessArt;
+    private Image asteroid_image1 = new Image("file:resource/asteroid.png", true);
+    private Image asteroid_image2 = new Image("file:resource/asteroid2.png", true); //sets the path of the asteroid image
+    private ImageView astImage = new ImageView(asteroid_image1); //sets up the imageviewer for the asteroid image
+    private ImageView ast2Image = new ImageView(asteroid_image2);
     private Circle hitBox = new Circle();
     
     final int EDGE_OBSTACLE_GAP = 15; //the gap on the edge is 5px larger than the ship gap because it takes 5px extra on one side
@@ -40,10 +43,19 @@ public class Asteroid extends Node implements Obstacle {
     }
     
     public ImageView initAsteroidGraphics(){
+        int guessAst = (int) (Math.random() * 100);
+        System.out.println(guessAst);
+        if (guessAst % 2 == 1) {
         astImage.setFitWidth(width);
         astImage.setFitHeight(height);
         //sets the width and height of the image
         return astImage;
+        }
+        else {
+            ast2Image.setFitWidth(width);
+            ast2Image.setFitHeight(height);
+            return ast2Image;
+        }
     }
     
     public int getWidth(){

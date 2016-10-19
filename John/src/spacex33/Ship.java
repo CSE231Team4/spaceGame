@@ -11,16 +11,20 @@ import javafx.scene.image.ImageView;
 
 public class Ship extends Node{
     final int SHIP_GAP = 10; //gap between lanes of the ship
+    final int BOTTOM_GAP = 175;
     
+    private int shipHP = 3;
+    private boolean isHit;
     private int width; //width of the ship img
     private int height; //height of the ship img
-    private Image ship_src = new Image("file:resource/ship.png", true);
+    private Image ship_src = new Image("file:resource/Images/ship.png", true);
+    private Image ship_hit = new Image("file:resource/Images/ship_inverse.png", true);
     ImageView shipView = new ImageView();
     
     public Ship(){
         super();
-        width = 60;
-        height = 60;
+        width = 105;
+        height = 105;
     }
     
     public Ship(int w, int h){
@@ -31,10 +35,39 @@ public class Ship extends Node{
 
     public ImageView initShipGraphics() {
         shipView.setImage(ship_src);
-        shipView.setTranslateY(620); // 900-105-75 to get 720. This give a 75px gap from the bottom of the page
+        shipView.setTranslateY(900-width-BOTTOM_GAP); // 900-105-75 to get 720. This give a 75px gap from the bottom of the page
         shipView.setTranslateX(SHIP_GAP); //sets the X coordinate to be 10px away from the edge
         //sets the 
         return shipView;
+    }
+    
+    public void resetLocation(){
+        shipView.setTranslateY(900-width-BOTTOM_GAP); 
+        shipView.setTranslateX(SHIP_GAP); 
+    }
+    
+    public boolean getShipState() {
+        return isHit;
+        // used to know when you've been hit
+    }
+    
+    public void setShipState() {
+        if (isHit == false)
+        {
+        shipView.setImage(ship_hit);
+        isHit = true;
+        }
+        else {
+            shipView.setImage(ship_src);
+            isHit = false;
+        }
+    }
+    
+    public void checkShipState() {
+        if (isHit != false) {
+            shipView.setImage(ship_src);
+            isHit = false;
+        }
     }
     
     public int getWidth(){
@@ -48,6 +81,10 @@ public class Ship extends Node{
     public int getGap(){
         return SHIP_GAP; //returns the ship gap
     }
+    
+    public int getHealth(){
+        return shipHP;
+    }
         
     public void setWidth(int w){
         width = w;
@@ -57,6 +94,9 @@ public class Ship extends Node{
         height = h;
     }
     
+    public void setHealth(int health){
+        shipHP = health;
+    }
     @Override
     protected NGNode impl_createPeer() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

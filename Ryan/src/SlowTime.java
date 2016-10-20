@@ -39,7 +39,7 @@ public class SlowTime extends Node implements Obstacle{
         height = h;
     }
     
-    public ImageView initSlowGraphics(){
+    public ImageView initGraphics(){
         slowImg.setFitWidth(width);
         slowImg.setFitHeight(height);
         

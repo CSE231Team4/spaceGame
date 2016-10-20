@@ -37,7 +37,7 @@ public class Heart extends Node {
         height = h;
     }
     
-    public ImageView initHeartGraphics(){
+    public ImageView initGraphics(){
         heartImage.setFitWidth(width);
         heartImage.setFitHeight(height);
         heartImage.setTranslateX(5);
@@ -52,6 +52,10 @@ public class Heart extends Node {
     
     public void setWidth(int w){
         width = w;
+    }
+    
+    public Image getImage(){
+        return heart_image;
     }
 
     @Override

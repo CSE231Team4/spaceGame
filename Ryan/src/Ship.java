@@ -33,7 +33,7 @@ public class Ship extends Node{
         height = h;
     }
 
-    public ImageView initShipGraphics() {
+    public ImageView initGraphics() {
         shipView.setImage(ship_src);
         shipView.setTranslateY(900-width-BOTTOM_GAP); // 900-105-75 to get 720. This give a 75px gap from the bottom of the page
         shipView.setTranslateX(SHIP_GAP); //sets the X coordinate to be 10px away from the edge

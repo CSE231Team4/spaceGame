@@ -39,7 +39,7 @@ public class Asteroid extends Node implements Obstacle {
         lane = 0;
     }
     
-    public ImageView initAsteroidGraphics(){
+    public ImageView initGraphics(){
         int guessAst = (int) (Math.random() * 100);
         if (guessAst % 2 == 1) {
         astImage.setFitWidth(width);

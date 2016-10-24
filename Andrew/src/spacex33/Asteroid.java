@@ -15,11 +15,10 @@ public class Asteroid extends Node implements Obstacle {
     private int height; //height of the image
     private int lane;
     private int guessArt;
-    private Image asteroid_image1 = new Image("file:resource/asteroid.png", true);
-    private Image asteroid_image2 = new Image("file:resource/asteroid2.png", true); //sets the path of the asteroid image
+    private Image asteroid_image1 = new Image("file:resource/Images/asteroid.png", true);
+    private Image asteroid_image2 = new Image("file:resource/Images/asteroid2.png", true); //sets the path of the asteroid image
     private ImageView astImage = new ImageView(asteroid_image1); //sets up the imageviewer for the asteroid image
     private ImageView ast2Image = new ImageView(asteroid_image2);
-    private Circle hitBox = new Circle();
     
     final int EDGE_OBSTACLE_GAP = 15; //the gap on the edge is 5px larger than the ship gap because it takes 5px extra on one side
     final int MID_OBSTACLE_GAP = EDGE_OBSTACLE_GAP + 5; //the gaps beween lanes in the middle are 5px bigger because it takes 5 off both sides
@@ -30,7 +29,6 @@ public class Asteroid extends Node implements Obstacle {
         width = 95;
         height = 95;
         //default width and height are 95 because that's what we're using, but this is subject to change
-        hitBox.setRadius(width/2);
         lane = 0;
     }
     
@@ -38,13 +36,11 @@ public class Asteroid extends Node implements Obstacle {
         super();
         width = w;
         height = h;
-        hitBox.setRadius(width/2);
         lane = 0;
     }
     
-    public ImageView initAsteroidGraphics(){
+    public ImageView initGraphics(){
         int guessAst = (int) (Math.random() * 100);
-        System.out.println(guessAst);
         if (guessAst % 2 == 1) {
         astImage.setFitWidth(width);
         astImage.setFitHeight(height);
@@ -76,14 +72,6 @@ public class Asteroid extends Node implements Obstacle {
     
     public int getLane(){
         return lane;
-    }
-    
-    public Circle initHitBox(){
-        return hitBox;
-    }
-    
-    public void setHitBoxY(int y){
-        hitBox.setTranslateY(y);
     }
         
     public void setWidth(int w){

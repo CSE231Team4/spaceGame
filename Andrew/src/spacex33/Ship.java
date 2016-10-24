@@ -14,11 +14,11 @@ public class Ship extends Node{
     final int BOTTOM_GAP = 75;
     
     private int shipHP = 3;
+    private boolean isHit;
     private int width; //width of the ship img
     private int height; //height of the ship img
-    private boolean isHit;
-    private Image ship_hit = new Image("file:resource/ship_inverse.png", true);
-    private Image ship_src = new Image("file:resource/ship.png", true);
+    private Image ship_src = new Image("file:resource/Images/ship.png", true);
+    private Image ship_hit = new Image("file:resource/Images/ship_inverse.png", true);
     ImageView shipView = new ImageView();
     
     public Ship(){
@@ -33,40 +33,24 @@ public class Ship extends Node{
         height = h;
     }
 
-    public ImageView initShipGraphics() {
+    public ImageView initGraphics() {
         shipView.setImage(ship_src);
-        shipView.setTranslateY(800-width-BOTTOM_GAP); // 900-105-75 to get 720. This give a 75px gap from the bottom of the page
+        shipView.setTranslateY(900-width-BOTTOM_GAP); // 900-105-75 to get 720. This give a 75px gap from the bottom of the page
         shipView.setTranslateX(SHIP_GAP); //sets the X coordinate to be 10px away from the edge
         //sets the 
         return shipView;
     }
     
     public void resetLocation(){
-        shipView.setTranslateY(800-width-BOTTOM_GAP); 
-        //shipView.setTranslateX(SHIP_GAP); 
+        shipView.setTranslateY(900-width-BOTTOM_GAP); 
+        shipView.setTranslateX(SHIP_GAP); 
     }
     
     public boolean getShipState() {
         return isHit;
         // used to know when you've been hit
     }
-            
-    public int getWidth(){
-        return width;
-    }
     
-    public int getHeight(){
-        return height;
-    }
-    
-    public int getGap(){
-        return SHIP_GAP; //returns the ship gap
-    }
-    
-    public int getHealth(){
-        return shipHP;
-    }
-        
     public void setShipState() {
         if (isHit == false)
         {
@@ -86,6 +70,22 @@ public class Ship extends Node{
         }
     }
     
+    public int getWidth(){
+        return width;
+    }
+    
+    public int getHeight(){
+        return height;
+    }
+    
+    public int getGap(){
+        return SHIP_GAP; //returns the ship gap
+    }
+    
+    public int getHealth(){
+        return shipHP;
+    }
+        
     public void setWidth(int w){
         width = w;
     }

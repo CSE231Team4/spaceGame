@@ -180,7 +180,7 @@ public class SpaceX33 extends Application {
         if (rand_hold < spawnRate && rand_hold > 0.002) {
             asteroids.add(spawnAsteroid()); //randomly spawns an obstacle, and adds the graphic for the asteroid to the asteroid list
         }
-        if(rand_hold < 0.002)
+        if(rand_hold < 0.002 && enableSlow == true)
             powerups.add(spawnPowerup());
 
         checkState();
@@ -241,7 +241,7 @@ public class SpaceX33 extends Application {
         storeSpawnRate = spawnRate;
         
         for(Node powerup : powerups){
-            if(isCollision(powerup) && enableSlow == true){
+            if(isCollision(powerup)){
                     enableSlow = false;
                     toRemSlow = powerup;
                     root.getChildren().remove(powerup);

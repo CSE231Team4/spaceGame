@@ -16,35 +16,47 @@ import javafx.scene.image.ImageView;
 
 /**
  *
- * @author asdas
+ * @author Ryan
  */
-public class SlowTime extends Node implements Obstacle{
-    private int width;
-    private int height;
-    private Image slowtime_image = new Image("file:resource/Images/clock_image.png", true);
-    private ImageView slowImg = new ImageView(slowtime_image);
-    
+public class Powerup extends Node{
+    int width, height, pow_num;
+    Image cacheTimeSlow = new Image("file:resource/Images/clock_image.png", true);
+    Image cacheHeal = new Image("file:resource/Images/heartImg.png", true);
+    ImageView powerup = new ImageView();
+    int sLives;
     final int EDGE_POWERUP_GAP = 15; //the gap on the edge is 5px larger than the ship gap because it takes 5px extra on one side
     final int MID_POWERUP_GAP = EDGE_POWERUP_GAP + 5; //the gaps beween lanes in the middle are 5px bigger because it takes 5 off both sides
     //gaps need to be slightly larger so that the edges of the obstacles don't touch the ship as they pass
     
-    public SlowTime(){
+    public Powerup(){
         super();
         width = 95;
         height = 95;
     }
     
-    public SlowTime(int w, int h){
-        super();
-        width = w;
-        height = h;
+    public ImageView initGraphics(){
+        powerup = new ImageView(choosePowerup());
+        powerup.setFitWidth(width);
+        powerup.setFitHeight(height);
+        
+        return powerup;
     }
     
-    public ImageView initGraphics(){
-        slowImg.setFitWidth(width);
-        slowImg.setFitHeight(height);
+    public Image choosePowerup(){
+        pow_num = (int)(Math.random() * 100) % 2;
         
-        return slowImg;
+        if(pow_num == 0){
+            return cacheTimeSlow;
+        }
+        else
+            return cacheHeal;
+    }
+    
+    public void findLives(int x) {
+        sLives = x;
+    }
+    public int getType(){
+        return pow_num;
     }
     
     public void setWidth(int w){
@@ -90,5 +102,4 @@ public class SlowTime extends Node implements Obstacle{
     public Object impl_processMXNode(MXNodeAlgorithm alg, MXNodeAlgorithmContext ctx) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
 }

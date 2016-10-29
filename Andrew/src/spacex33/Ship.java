@@ -12,6 +12,7 @@ import javafx.scene.image.ImageView;
 public class Ship extends Node{
     final int SHIP_GAP = 10; //gap between lanes of the ship
     final int BOTTOM_GAP = 75;
+    private int w_height;
     
     private int shipHP = 3;
     private boolean isHit;
@@ -35,14 +36,14 @@ public class Ship extends Node{
 
     public ImageView initGraphics() {
         shipView.setImage(ship_src);
-        shipView.setTranslateY(900-width-BOTTOM_GAP); // 900-105-75 to get 720. This give a 75px gap from the bottom of the page
+        shipView.setTranslateY(w_height-width-BOTTOM_GAP); // 900-105-75 to get 720. This give a 75px gap from the bottom of the page
         shipView.setTranslateX(SHIP_GAP); //sets the X coordinate to be 10px away from the edge
         //sets the 
         return shipView;
     }
     
     public void resetLocation(){
-        shipView.setTranslateY(900-width-BOTTOM_GAP); 
+        shipView.setTranslateY(w_height-width-BOTTOM_GAP); 
         shipView.setTranslateX(SHIP_GAP); 
     }
     
@@ -95,7 +96,14 @@ public class Ship extends Node{
     }
     
     public void setHealth(int health){
-        shipHP = health;
+        if(health > 5)
+            shipHP = 5;
+        else
+            shipHP = health;
+    }
+    
+    public void setW_Height(int h){
+        w_height = h;
     }
     @Override
     protected NGNode impl_createPeer() {

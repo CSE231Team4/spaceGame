@@ -1,9 +1,13 @@
-    #pane{
+@font-face {
+    src: url("file:resource/Fonts/PressStart2P.ttf");
+}
+
+.label {
+    -fx-font-family: "PressStart2P";
+}
+    /*#pane{
         -fx-background-image: url("file:resource/Images/space_background.png");
         -fx-background-repeat: stretch;   
         -fx-background-size: 750 950;
         -fx-background-position: center center;
-    }
-
-
-
+    }*/

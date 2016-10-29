@@ -24,11 +24,10 @@ import javafx.scene.layout.Pane;
 public class HeadsUpDisplay extends Node {
     Pane HUD = new Pane();
     Ship shipVal = new Ship();
-    Heart hImg = new Heart();
     ImageView lastHeart;
-    Image cacheHeart = hImg.getImage();
+    Image cacheHeart = new Image("file:resource/Images/heartImg.png", true);
     List<ImageView> hearts = new ArrayList<>(); //keeps a list of all the hearts
-    final double IMAGE_WIDTH = hImg.getWidth();
+    final double IMAGE_WIDTH = 70;
     final int TOP_HEART_GAP = 5;
     final int MID_HEART_GAP = 5;
     final int SIDE_HEART_GAP = 5;
@@ -36,7 +35,7 @@ public class HeadsUpDisplay extends Node {
     
     
     public HeadsUpDisplay(){
-        initHearts();
+        //initHearts();
     }
     
     public void initHearts(){
@@ -53,6 +52,7 @@ public class HeadsUpDisplay extends Node {
     public void hasHit(){
         shipVal.setHealth(shipVal.getHealth()-1); //reduces ship health by 1
         lastHeart = hearts.get(hearts.size()-1); //gets the last heart in the list
+        heart_num--;
         HUD.getChildren().remove(lastHeart); //removes the last heart from the HUD
         hearts.remove(lastHeart); //removes the last hear from the list
     }
@@ -65,11 +65,27 @@ public class HeadsUpDisplay extends Node {
             heart_num++;
             HUD.getChildren().add(heart);
         }
-        heart_num = 0;
+    }
+    
+    public void hasPower(){
+        shipVal.setHealth(shipVal.getHealth()+1);
+        updateHearts(new ImageView(cacheHeart));
+    }
+    
+    public void updateHearts(ImageView newHeart){
+        if(heart_num < 5){
+        newHeart.setTranslateY(TOP_HEART_GAP);
+        newHeart.setTranslateX(SIDE_HEART_GAP + heart_num *(MID_HEART_GAP + IMAGE_WIDTH));
+        hearts.add(newHeart);
+        HUD.getChildren().add(newHeart);
+        heart_num++;
+        }
+        else
+            heart_num = 5;
     }
     
     public int numHearts(){
-        return hearts.size(); //returns the number of hearts
+        return heart_num; //returns the number of hearts
     }
 
     @Override
@@ -91,5 +107,5 @@ public class HeadsUpDisplay extends Node {
     public Object impl_processMXNode(MXNodeAlgorithm alg, MXNodeAlgorithmContext ctx) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
 }

@@ -81,6 +81,8 @@ public class SpaceX33 extends Application {
     HBox startMessage = new HBox();
     HBox starter = new HBox();
     HBox starter2 = new HBox();
+    HBox pause = new HBox();
+    HBox pause2 = new HBox();
            
     private Parent createContent(){ 
         root = new Pane(); //initialize the pane
@@ -357,21 +359,33 @@ public class SpaceX33 extends Application {
         // add start messages
         startMessage.setAlignment(Pos.TOP_CENTER);
         startMessage.setLayoutY(50);
-        startMessage.setPrefSize(window_width, window_height);
+        //startMessage.setPrefSize(window_width, window_height);
         root.getChildren().add(startMessage);
         printer("SPACEX33", 50, startMessage);
         
         starter.setAlignment(Pos.TOP_CENTER);
         starter.setLayoutY(350);
-        startMessage.setPrefSize(window_width, window_height);
+        //starter.setPrefSize(window_width, window_height);
         root.getChildren().add(starter);
         printer("PRESS 'SPACE' TO START", 25, starter);
         
         starter2.setAlignment(Pos.TOP_CENTER);
         starter2.setLayoutY(400);
-        startMessage.setPrefSize(window_width, window_height);
+        //starter2.setPrefSize(window_width, window_height);
         root.getChildren().add(starter2);
         printer("PRESS 'ESCAPE' TO QUIT", 25, starter2); 
+        
+        pause.setAlignment(Pos.TOP_CENTER);
+        pause.setLayoutY(100);
+        printer("GAME IS PAUSED", 45, pause);
+        //pause.setPrefSize(window_width, window_height);
+        
+        pause2.setAlignment(Pos.TOP_CENTER);
+        pause2.setLayoutY(680);
+        printer("PRESS 'Q' TO RESUME", 35, pause2);
+        
+        
+        
         
         
         stage.getScene().setOnKeyPressed(event -> {
@@ -392,26 +406,33 @@ public class SpaceX33 extends Application {
                     break;
                     
                 case SPACE:
-                    if(state == STATE.START) {
+                    if(state == STATE.START && startCount == 0) {
                         state = STATE.GAME;
-                        if (startCount == 0) {
                         root.getChildren().add(shipDisplay);
                         HUD.initHearts();
                         root.getChildren().remove(startMessage);
                         root.getChildren().remove(starter);
                         root.getChildren().remove(starter2);
                         startCount++;
-                        }
                     }
                     break;
                     
                 case Q:
-                    if(state == STATE.GAME)
+                    if(state == STATE.GAME && startCount > 0) {
                         state = STATE.START;
+                        root.getChildren().add(pause);
+                        root.getChildren().add(pause2);
+                        root.getChildren().add(starter2);
+                    } else if (state == STATE.START && startCount > 0) {
+                        state = STATE.GAME;
+                        root.getChildren().remove(pause);
+                        root.getChildren().remove(pause2);
+                        root.getChildren().remove(starter2);
+                    }
                     break;
                     
                 case ESCAPE:
-                    System.exit(0);
+                    System.exit(3);
                     break;
                     
                 default: 

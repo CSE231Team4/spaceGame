@@ -460,10 +460,10 @@ public class SpaceX33 extends Application {
                     break;
                 case SPACE:
                     if(state == STATE.START){
-                    ((Pane)gameScene.getRoot()).getChildren().remove(startScene.getRoot());
-                    ((Pane)gameScene.getRoot()).getChildren().add(hudScene.getRoot());
+                        ((Pane)gameScene.getRoot()).getChildren().remove(startScene.getRoot());
+                        ((Pane)gameScene.getRoot()).getChildren().add(hudScene.getRoot());
+                        state = STATE.GAME;
                     }
-                     state = STATE.GAME;
                     break;
                 case Q:
                     System.out.println(state);

@@ -473,9 +473,11 @@ public class SpaceX33 extends Application {
                         ((Pane)gameScene.getRoot()).getChildren().add(pauseScene.getRoot());
                     }
                     else{
-                       state = STATE.GAME;
-                        ((Pane)gameScene.getRoot()).getChildren().remove(pauseScene.getRoot());
-                        ((Pane)gameScene.getRoot()).getChildren().add(hudScene.getRoot()); 
+                        if(state != STATE.START){
+                            state = STATE.GAME;
+                            ((Pane)gameScene.getRoot()).getChildren().remove(pauseScene.getRoot());
+                            ((Pane)gameScene.getRoot()).getChildren().add(hudScene.getRoot()); 
+                        }
                     }
                     break;
                     

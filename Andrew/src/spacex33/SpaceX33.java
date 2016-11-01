@@ -88,6 +88,8 @@ public class SpaceX33 extends Application {
     private int backnum = 0;
     private int cNum;
     private int multiplier = 1;
+    private HBox over = new HBox();
+    private HBox over2 = new HBox();
     
     private STATE state = STATE.START;
 
@@ -302,10 +304,12 @@ public class SpaceX33 extends Application {
                 
                     if(HUD.numHearts() <= 0){
                         state = STATE.OVER;
+                        shipDisplay.setVisible(false);
                         enableShip = false;
-                        timer.stop(); //stops the timer so asteroids no longer spawn
+                        //timer.stop(); //stops the timer so asteroids no longer spawn
                         saveScore();
-                        gameOverText();                      
+                        gameOverText();
+                        restartText();
                     }
                     //the above section is used for printing the "YOU LOSE" font
                     //return;
@@ -391,13 +395,13 @@ public class SpaceX33 extends Application {
     
     private void gameOverText(){
         String lose = "GAME OVER";
-        HBox hBox = new HBox();
-        hBox.setPrefSize(window_width, window_height);
-        hBox.setAlignment(Pos.CENTER);
+        //HBox hBox = new HBox();
+        over.setPrefSize(window_width, window_height);
+        over.setAlignment(Pos.CENTER);
         //hBox.setTranslateX(180); //sets x coordinate of the HBox
         //hBox.setTranslateY(420); //sets y coordinate of the HBox
         //I couldn't figure out how to center the text and just tried to eyeball it, if anyone has any fixes
-        root.getChildren().add(hBox); //adds the hBox object to the root
+        root.getChildren().add(over); //adds the hBox object to the root
 
         for (int i = 0; i < lose.toCharArray().length; i++) {
             char letter = lose.charAt(i);
@@ -407,13 +411,41 @@ public class SpaceX33 extends Application {
 
             text.setOpacity(0);
             text.setFill(Color.WHITE);
-            hBox.getChildren().add(text);
+            over.getChildren().add(text);
             FadeTransition ft = new FadeTransition(Duration.seconds(0.66), text);
             ft.setToValue(1);
             ft.setDelay(Duration.seconds(i * 0.15));
             ft.play();
         }
     }
+    
+    private void restartText() {
+               String lose = "PRESS 'R' TO RESTART";
+        //HBox hBox = new HBox();
+        over2.setPrefSize(window_width, window_height);
+        over2.setAlignment(Pos.CENTER);
+        over2.setLayoutY(100);
+        //hBox.setTranslateX(180); //sets x coordinate of the HBox
+        //hBox.setTranslateY(420); //sets y coordinate of the HBox
+        //I couldn't figure out how to center the text and just tried to eyeball it, if anyone has any fixes
+        root.getChildren().add(over2); //adds the hBox object to the root
+
+        for (int i = 0; i < lose.toCharArray().length; i++) {
+            char letter = lose.charAt(i);
+            Text text = new Text(String.valueOf(letter));
+            //text.setFont(Font.font(50));
+            text.setFont(Font.loadFont("file:resource/Fonts/PressStart2P.ttf", 25));
+
+            text.setOpacity(0);
+            text.setFill(Color.WHITE);
+            over2.getChildren().add(text);
+            FadeTransition ft = new FadeTransition(Duration.seconds(0.66), text);
+            ft.setToValue(1);
+            ft.setDelay(Duration.seconds(i * 0.15));
+            ft.play();
+    }
+ }
+        
     
     private void reset(){
         for(Node asteroid : asteroids){
@@ -422,6 +454,9 @@ public class SpaceX33 extends Application {
         for(Node powerup: powerups){
             root.getChildren().remove(powerup);
         }
+        shipObj.shipReset();
+        root.getChildren().remove(over);
+        root.getChildren().remove(over2);
         asteroids.removeAll(asteroids);
         powerups.removeAll(powerups);
         root.getChildren().remove(HUD);
@@ -511,7 +546,7 @@ public class SpaceX33 extends Application {
                     }
                     break;
                 case R:
-                    if(state == STATE.PAUSE && cNum % 2 == 0){
+                    if((state == STATE.PAUSE || state == STATE.OVER) && cNum % 2 == 0){
                         reset();
                         ((Pane)gameScene.getRoot()).getChildren().remove(pauseScene.getRoot());
                         ((Pane)gameScene.getRoot()).getChildren().remove(hudScene.getRoot());

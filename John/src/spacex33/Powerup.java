@@ -16,46 +16,67 @@ import javafx.scene.image.ImageView;
 
 /**
  *
- * @author asdas
+ * @author Ryan
  */
-public class Heart extends Node {
-    private int width; //width of the image
-    private int height; //height of the image
-    private Image heart_image = new Image("file:resource/Images/heartImg.png", true); //sets the path of the heart image
-    private ImageView heartImage = new ImageView(heart_image); //sets up the imageviewer for the heart image
-
-    public Heart(){
-        super();
-        width = 70;
-        height = 70;
-        //default width and height are 95 because that's what we're using, but this is subject to change
-    }
+public class Powerup extends Node{
+    int width, height, pow_num;
+    Image cacheTimeSlow = new Image("file:resource/Images/clock_image.png", true);
+    Image cacheHeal = new Image("file:resource/Images/heartImg.png", true);
+    ImageView powerup = new ImageView();
+    final int EDGE_POWERUP_GAP = 15; //the gap on the edge is 5px larger than the ship gap because it takes 5px extra on one side
+    final int MID_POWERUP_GAP = EDGE_POWERUP_GAP + 5; //the gaps beween lanes in the middle are 5px bigger because it takes 5 off both sides
+    //gaps need to be slightly larger so that the edges of the obstacles don't touch the ship as they pass
     
-    public Heart(int w, int h){
+    public Powerup(){
         super();
-        width = w;
-        height = h;
+        width = 95;
+        height = 95;
     }
     
     public ImageView initGraphics(){
-        heartImage.setFitWidth(width);
-        heartImage.setFitHeight(height);
-        heartImage.setTranslateX(5);
-        heartImage.setTranslateY(5);
-        //sets the width and height of the image
-        return heartImage;
+        powerup = new ImageView(choosePowerup());
+        powerup.setFitWidth(width);
+        powerup.setFitHeight(height);
+        
+        return powerup;
     }
     
-    public int getWidth(){
-        return width;
+    public Image choosePowerup(){
+        pow_num = (int)(Math.random() * 100) % 2;
+        
+        if(pow_num == 0){
+            return cacheTimeSlow;
+        }
+        else
+            return cacheHeal;
+    }
+    
+    public int getType(){
+        return pow_num;
     }
     
     public void setWidth(int w){
         width = w;
     }
     
-    public Image getImage(){
-        return heart_image;
+    public void setHeight(int h){
+        height = h;
+    }
+    
+    public int getWidth(){
+        return width;
+    }
+    
+    public int getHeight(){
+        return height;
+    }
+    
+    public int getMidGap(){
+        return MID_POWERUP_GAP;
+    }
+    
+    public int getEdgeGap(){
+        return EDGE_POWERUP_GAP;
     }
 
     @Override

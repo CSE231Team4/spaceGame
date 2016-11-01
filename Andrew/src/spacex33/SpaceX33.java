@@ -87,6 +87,7 @@ public class SpaceX33 extends Application {
     private Node toRemPower = new Powerup();
     private int backnum = 0;
     private int cNum;
+    private int multiplier = 1;
     
     private STATE state = STATE.START;
 
@@ -326,6 +327,7 @@ public class SpaceX33 extends Application {
                         enableSlow = false;
                         speed = speed / 2;
                         spawnRate = spawnRate / 2;
+                        multiplier =2;
                         timer(); 
                         break;
                     case 1: 
@@ -424,6 +426,7 @@ public class SpaceX33 extends Application {
         powerups.removeAll(powerups);
         root.getChildren().remove(HUD);
         speed = 7;
+        multiplier = 1;
         spawnCount = 0;
         speedAdd = 0.05;
         spawnRate = 0.03; 
@@ -447,8 +450,8 @@ public class SpaceX33 extends Application {
     }*/
     
     private void slowThings() {
-        speed = speed * 2;
-        spawnRate = spawnRate * 2;
+        speed = speed * multiplier;
+        spawnRate = spawnRate * multiplier;
         enableSlow = true;
     }
     

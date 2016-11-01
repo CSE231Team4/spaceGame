@@ -62,7 +62,7 @@ public class SpaceX33 extends Application {
     File highscores = new File("./resource/Text/highscores.txt");
     
     private Image bck = new Image("file:resource/Images/space_background.png",true);
-    private ImageView b1, b2, b3;
+    private ImageView b1, b2;
     
     //private final SlowTime slowObj = new SlowTime();
     
@@ -82,25 +82,15 @@ public class SpaceX33 extends Application {
     private Node toRemAst = new Asteroid();
     //private Node toRemSlow = new SlowTime();
     private Node toRemPower = new Powerup();
+    int backnum = 0;
     
     private STATE state = STATE.START;
 
     private Parent createContent(){
         root = new Pane(); //initialize the pane
-        b1 = new ImageView(bck);
-        b1.setScaleY(1.1);
-        b1.setScaleX(1.1);
-        background.add(b1);
-        b2 = new ImageView(bck);
-        b2.setScaleX(1.1);
-        b2.setScaleY(1.1);
-        b2.setTranslateY(50-window_height);
-        background.add(b2);
-        b3 = new ImageView(bck);
-        b3.setScaleX(1.1);
-        b3.setScaleY(1.1);
-        b3.setTranslateY(50-2*window_height);
-        background.add(b3);
+        initBackground();
+        root.setId("pane"); //set the ID of the pane for the CSS file
+        
        
         if(screenSize.getHeight() <= 900)
             window_height = 800;
@@ -109,14 +99,6 @@ public class SpaceX33 extends Application {
         root.setPrefSize(window_width, window_height); //set the size of the pane
         
         shipDisplay = shipObj.initGraphics(); //calls the initShip method to load in the graphics for the ship
-
-        /*HBox left = new HBox();
-        left.setPrefSize(700, 900);
-        left.setAlignment(Pos.BOTTOM_LEFT);
-        Text text = new Text(" ← A");
-        text.setFont(Font.loadFont("file:resource/Fonts/PressStart2P.ttf", 40));
-        text.setFill(Color.WHITE);
-        left.getChildren().add(text);*/
         root.getChildren().add(b1);
         root.getChildren().add(b2);
         root.getChildren().add(shipDisplay); //adds the shipDisplay to the root so it can be displayed
@@ -144,6 +126,18 @@ public class SpaceX33 extends Application {
     
     private Parent createPauseScreen(){
         return pauseScreen.initPauseScreen();
+    }
+    
+    private void initBackground(){
+        b1 = new ImageView(bck);
+        b1.setScaleY(1.1);
+        b1.setScaleX(1.1);
+        background.add(b1);
+        b2 = new ImageView(bck);
+        b2.setScaleX(1.1);
+        b2.setScaleY(1.1);
+        b2.setTranslateY(window_height);
+        background.add(b2);
     }
     
     private Node spawnAsteroid() {
@@ -228,6 +222,9 @@ public class SpaceX33 extends Application {
         if(state == STATE.PAUSE){
             enableShip = false;
         }
+        if(state == STATE.START){
+            shipDisplay.setVisible(false);
+        }
         
     }
     
@@ -238,6 +235,7 @@ public class SpaceX33 extends Application {
             if(asteroid.getTranslateY() > window_height){
                 toRemAst = asteroid;
                 root.getChildren().remove(asteroid);
+                HUD.setScore(HUD.getScore() + 50);
             }
         }
         asteroids.remove(toRemAst);
@@ -257,9 +255,9 @@ public class SpaceX33 extends Application {
     
     private void backgroundUpdate(){
         for(Node bg : background){
-            bg.setTranslateY(bg.getTranslateY() + speed/4);
+            bg.setTranslateY(bg.getTranslateY() + speed/3);
             
-            if(bg.getTranslateY() > window_height + 10)
+            if(bg.getTranslateY() > window_height)
                 bg.setTranslateY(0-window_height);
         }
     }
@@ -284,7 +282,7 @@ public class SpaceX33 extends Application {
             if (System.currentTimeMillis() - istart > iframes) {
                 shipObj.checkShipState();
                 iframes = 0;
-                if (isCollision(asteroid)) { //checks for an intersection between the asteroid and the ship 
+                if (isCollision(asteroid, shipDisplay)) { //checks for an intersection between the asteroid and the ship 
                     iframes = 2000;
                     istart = System.currentTimeMillis();
                     root.getChildren().remove(asteroid);
@@ -295,6 +293,7 @@ public class SpaceX33 extends Application {
                     HUD.hasHit();
                 
                     if(HUD.numHearts() <= 0){
+                        state = STATE.OVER;
                         enableShip = false;
                         timer.stop(); //stops the timer so asteroids no longer spawn
                         saveScore();
@@ -310,7 +309,7 @@ public class SpaceX33 extends Application {
         }
         
         for(ImageView power : powerups){
-            if(isCollision(power)){
+            if(isCollision(power, shipDisplay)){
                 toRemPower = power;
                 root.getChildren().remove(power);
                 
@@ -332,8 +331,8 @@ public class SpaceX33 extends Application {
         powerups.remove(toRemPower);
     }
     
-    private boolean isCollision(Node hb){
-        return hb.getBoundsInParent().intersects(shipDisplay.getBoundsInParent()); //returns whether or not the bounds intersect
+    private boolean isCollision(Node obstacle1, Node obstacle2){
+        return obstacle1.getBoundsInParent().intersects(obstacle2.getBoundsInParent()); //returns whether or not the bounds intersect
     }
     
     private void saveScore(){
@@ -351,7 +350,6 @@ public class SpaceX33 extends Application {
                     scores[i] = Integer.valueOf(line);
                     i++;
                 }
-                
                 br.close();
             } catch (IOException ex) {
                 Logger.getLogger(SpaceX33.class.getName()).log(Level.SEVERE, null, ex);
@@ -408,6 +406,26 @@ public class SpaceX33 extends Application {
         }
     }
     
+    private void reset(){
+        for(Node asteroid : asteroids){
+            root.getChildren().remove(asteroid);
+        }
+        for(Node powerup: powerups){
+            root.getChildren().remove(powerup);
+        }
+        asteroids.removeAll(asteroids);
+        powerups.removeAll(powerups);
+        root.getChildren().remove(HUD);
+        speed = 7;
+        spawnCount = 0;
+        speedAdd = 0.05;
+        spawnRate = 0.03; 
+        iframes = 0;
+        istart = 0;
+        shipDisplay.setTranslateX(shipObj.getGap());
+        HUD.reset();
+    }
+    
     private void timer() {
         Timeline POWER_UP_TIME = new Timeline (new KeyFrame(
         Duration.seconds(5.0),
@@ -436,7 +454,7 @@ public class SpaceX33 extends Application {
         pauseScene = new Scene(createPauseScreen());
 
         ((Pane)gameScene.getRoot()).getChildren().add(startScene.getRoot()); //puts the HUD overlay over the game screen
-        //gameScene.getStylesheets().addAll(this.getClass().getResource("style.css").toExternalForm()); //sets the stylesheet of the scene (used for the background image)
+        gameScene.getStylesheets().addAll(this.getClass().getResource("style.css").toExternalForm()); //sets the stylesheet of the scene (used for the background image)
 
         stage.setScene(gameScene); 
         stage.setResizable(false); //makes it not possible to resize the window since this breaks the game
@@ -460,29 +478,40 @@ public class SpaceX33 extends Application {
                     break;
                 case SPACE:
                     if(state == STATE.START){
-                        ((Pane)gameScene.getRoot()).getChildren().remove(startScene.getRoot());
-                        ((Pane)gameScene.getRoot()).getChildren().add(hudScene.getRoot());
-                        state = STATE.GAME;
+                    ((Pane)gameScene.getRoot()).getChildren().remove(startScene.getRoot());
+                    ((Pane)gameScene.getRoot()).getChildren().add(hudScene.getRoot());
+                    state = STATE.GAME;
                     }
+                     
                     break;
                 case Q:
-                    System.out.println(state);
                     if(state == STATE.GAME){
                         state = STATE.PAUSE;
-                        ((Pane)gameScene.getRoot()).getChildren().remove(hudScene.getRoot()); 
+                        //((Pane)gameScene.getRoot()).getChildren().remove(hudScene.getRoot()); 
                         ((Pane)gameScene.getRoot()).getChildren().add(pauseScene.getRoot());
                     }
                     else{
-                        if(state != STATE.START){
+                        if(state != STATE.START && state != STATE.OVER){
                             state = STATE.GAME;
                             ((Pane)gameScene.getRoot()).getChildren().remove(pauseScene.getRoot());
-                            ((Pane)gameScene.getRoot()).getChildren().add(hudScene.getRoot()); 
+                            //((Pane)gameScene.getRoot()).getChildren().add(hudScene.getRoot()); 
                         }
                     }
+                    System.out.println(state);
                     break;
-                    
+                case R:
+                    if(state == STATE.PAUSE){
+                        reset();
+                        ((Pane)gameScene.getRoot()).getChildren().remove(pauseScene.getRoot());
+                        ((Pane)gameScene.getRoot()).getChildren().remove(hudScene.getRoot());
+                        state = STATE.START;
+                        ((Pane)gameScene.getRoot()).getChildren().add(startScene.getRoot());
+                        
+                    }   
+                    break;
                 case ESCAPE:
-                    System.exit(0);
+                    if(state != STATE.GAME)
+                    System.exit(3);
                     break;
                 default:
                     break;
@@ -494,7 +523,8 @@ public class SpaceX33 extends Application {
     public static enum STATE{
         START,
         GAME,
-        PAUSE
+        PAUSE,
+        OVER
     };
     
     public static void main(String[] args) {

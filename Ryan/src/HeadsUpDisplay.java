@@ -142,6 +142,19 @@ public class HeadsUpDisplay extends Node implements Screen{
             heart_num = 5;
     }
     
+    public void reset(){
+        setScore(0);
+        for(Node heart : hearts){
+            HUD.getChildren().remove(heart);
+        }
+        hearts.removeAll(hearts);
+        
+        heart_num = 0;
+        shipVal.setHealth(3);
+        initHearts();
+        scoreChange = 0;
+    }
+    
     public int numHearts(){
         return heart_num; //returns the number of hearts
     }

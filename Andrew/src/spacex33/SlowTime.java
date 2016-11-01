@@ -29,7 +29,6 @@ public class SlowTime extends Node implements Obstacle{
     //gaps need to be slightly larger so that the edges of the obstacles don't touch the ship as they pass
     
     public SlowTime(){
-        super();
         width = 95;
         height = 95;
     }

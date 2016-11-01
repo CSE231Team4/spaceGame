@@ -23,7 +23,6 @@ public class Powerup extends Node{
     Image cacheTimeSlow = new Image("file:resource/Images/clock_image.png", true);
     Image cacheHeal = new Image("file:resource/Images/heartImg.png", true);
     ImageView powerup = new ImageView();
-    int sLives;
     final int EDGE_POWERUP_GAP = 15; //the gap on the edge is 5px larger than the ship gap because it takes 5px extra on one side
     final int MID_POWERUP_GAP = EDGE_POWERUP_GAP + 5; //the gaps beween lanes in the middle are 5px bigger because it takes 5 off both sides
     //gaps need to be slightly larger so that the edges of the obstacles don't touch the ship as they pass
@@ -52,9 +51,6 @@ public class Powerup extends Node{
             return cacheHeal;
     }
     
-    public void findLives(int x) {
-        sLives = x;
-    }
     public int getType(){
         return pow_num;
     }

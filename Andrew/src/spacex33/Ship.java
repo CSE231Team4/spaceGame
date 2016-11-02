@@ -71,6 +71,11 @@ public class Ship extends Node{
         }
     }
     
+    public void shipReset() {
+        shipView.setImage(ship_src);
+        isHit = false;
+    }
+    
     public int getWidth(){
         return width;
     }

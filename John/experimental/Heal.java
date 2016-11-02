@@ -16,46 +16,58 @@ import javafx.scene.image.ImageView;
 
 /**
  *
- * @author asdas
+ * @author Ryan
  */
-public class Heart extends Node {
-    private int width; //width of the image
-    private int height; //height of the image
-    private Image heart_image = new Image("file:resource/Images/heartImg.png", true); //sets the path of the heart image
-    private ImageView heartImage = new ImageView(heart_image); //sets up the imageviewer for the heart image
-
-    public Heart(){
-        super();
-        width = 70;
-        height = 70;
-        //default width and height are 95 because that's what we're using, but this is subject to change
+public class Heal extends Node implements Obstacle{
+    private int width;
+    private int height;
+    private Image heal_image = new Image("file:resource/Images/heartImg.png", true);
+    private ImageView healImg = new ImageView(heal_image);
+    
+    final int EDGE_POWERUP_GAP = 15; //the gap on the edge is 5px larger than the ship gap because it takes 5px extra on one side
+    final int MID_POWERUP_GAP = EDGE_POWERUP_GAP + 5; //the gaps beween lanes in the middle are 5px bigger because it takes 5 off both sides
+    //gaps need to be slightly larger so that the edges of the obstacles don't touch the ship as they pass
+    
+    public Heal(){
+        width = 95;
+        height = 95;
     }
     
-    public Heart(int w, int h){
+    public Heal(int w, int h){
         super();
         width = w;
         height = h;
     }
     
     public ImageView initGraphics(){
-        heartImage.setFitWidth(width);
-        heartImage.setFitHeight(height);
-        heartImage.setTranslateX(5);
-        heartImage.setTranslateY(5);
-        //sets the width and height of the image
-        return heartImage;
-    }
-    
-    public int getWidth(){
-        return width;
+        healImg.setFitWidth(width);
+        healImg.setFitHeight(height);
+        
+        return healImg;
     }
     
     public void setWidth(int w){
         width = w;
     }
     
-    public Image getImage(){
-        return heart_image;
+    public void setHeight(int h){
+        height = h;
+    }
+    
+    public int getWidth(){
+        return width;
+    }
+    
+    public int getHeight(){
+        return height;
+    }
+    
+    public int getMidGap(){
+        return MID_POWERUP_GAP;
+    }
+    
+    public int getEdgeGap(){
+        return EDGE_POWERUP_GAP;
     }
 
     @Override
@@ -77,4 +89,5 @@ public class Heart extends Node {
     public Object impl_processMXNode(MXNodeAlgorithm alg, MXNodeAlgorithmContext ctx) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-}
+    
+}    

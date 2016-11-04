@@ -10,71 +10,50 @@ import com.sun.javafx.geom.transform.BaseTransform;
 import com.sun.javafx.jmx.MXNodeAlgorithm;
 import com.sun.javafx.jmx.MXNodeAlgorithmContext;
 import com.sun.javafx.sg.prism.NGNode;
-import javafx.geometry.Insets;
+import javafx.animation.FadeTransition;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
+import static spacex33.Screen.WINDOW_HEIGHT;
+import static spacex33.Screen.WINDOW_WIDTH;
 
 /**
  *
  * @author asdas
  */
-public class StartScreen extends Node implements Screen{
-    Pane startScreen = new Pane();
-    HBox startMessage = new HBox();
-    HBox starter = new HBox();
-    HBox starter2 = new HBox();
-    HBox starter3 = new HBox();
-    HBox starter4 = new HBox();
+public class GameOver extends Node implements Screen {
+    Pane gameOver = new Pane();
+    HBox overMessage = new HBox();
+    HBox restartMessage = new HBox();
     
-    public StartScreen(){
+    public GameOver(){
         super();
+        overMessage.setAlignment(Pos.CENTER);
+        printer("GAME OVER", 70, overMessage);
         
-        // add start messages
-        startMessage.setAlignment(Pos.TOP_CENTER);
-        startMessage.setLayoutY(200);
-        printer("SPACEX33", 70, startMessage);
-        
-        starter.setAlignment(Pos.TOP_CENTER);
-        starter.setLayoutY(350);
-        printer("PRESS 'SPACE' TO START", 25, starter);
-        
-        starter2.setAlignment(Pos.TOP_CENTER);
-        starter2.setLayoutY(400);
-        printer("PRESS 'ESCAPE' TO QUIT", 25, starter2);
-        
-        starter3.setAlignment(Pos.TOP_CENTER);
-        starter3.setLayoutY(450);
-        printer("PRESS 'C' FOR CONTROLS", 25, starter3);
-        
-        starter4.setAlignment(Pos.TOP_CENTER);
-        starter4.setLayoutY(500);
-        printer("PRESS 'H' FOR HIGHSCORES", 25, starter4);
-
+        restartMessage.setAlignment(Pos.CENTER);
+        restartMessage.setTranslateY(100);
+        printer("PRESS 'R' TO RESTART", 20, restartMessage);
     }
     
-    public Pane initStartScreen(){
-        return startScreen;
+    public Pane initGameOver(){
+        return gameOver;
     }
     
-    public void printer(String print, int size, HBox location) {
+    public void printer(String print, int size, HBox location){
         location.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         Text hold_text = new Text(print);
         hold_text.setFont(Font.loadFont("file:resource/Fonts/PressStart2P.ttf", size));
         hold_text.setFill(Color.WHITE);
-        location.setAlignment(Pos.TOP_CENTER);
+        location.setAlignment(Pos.CENTER);
         location.getChildren().add(hold_text);
-        startScreen.getChildren().add(location);
+        gameOver.getChildren().add(location);
     }
-    
-    
 
     @Override
     protected NGNode impl_createPeer() {

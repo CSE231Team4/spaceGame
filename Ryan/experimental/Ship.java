@@ -71,6 +71,10 @@ public class Ship extends Node{
         }
     }
     
+    public boolean isHit(){
+        return isHit;
+    }
+    
     public int getWidth(){
         return width;
     }

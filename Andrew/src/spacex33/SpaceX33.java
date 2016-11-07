@@ -92,6 +92,7 @@ public class SpaceX33 extends Application {
     //private Node toRemSlow = new SlowTime();
     private Node toRemPower = new Powerup();
     private Rectangle toRemShot = new Rectangle();
+    private int shotsLeft = 10;
     //private Rectangle shot = new Rectangle(15, 30, Color.RED);
     int backnum = 0;
     Timeline POWER_UP_TIME;
@@ -184,11 +185,14 @@ public class SpaceX33 extends Application {
     }
     
     private void spawnShot() {
+        if(shotsLeft > 0) {
         Rectangle shot = new Rectangle(15, 30, Color.RED);
         shots.add(shot);
         shot.setTranslateX(shipDisplay.getTranslateX() +45);
         shot.setTranslateY(shipDisplay.getTranslateY());
         root.getChildren().add(shot);
+        shotsLeft--;
+        }
     }
     
     

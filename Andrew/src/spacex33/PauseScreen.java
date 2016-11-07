@@ -36,10 +36,12 @@ public class PauseScreen implements Screen {
         pause.setAlignment(Pos.TOP_CENTER);
         pause.setLayoutY(100);
         printer("GAME IS PAUSED", 45, pause);
+        //pauseScreen.getChildren().add(pause);
         
         pause2.setAlignment(Pos.TOP_CENTER);
         pause2.setLayoutY(175);
         printer("PRESS 'Q' TO RESUME", 20, pause2);
+        //pauseScreen.getChildren().add(pause2);
         
         pause3.setAlignment(Pos.TOP_CENTER);
         pause3.setLayoutY(215);
@@ -54,7 +56,7 @@ public class PauseScreen implements Screen {
         return pauseScreen;
     }
     
-    private void printer(String print, int size, HBox location) {
+    public void printer(String print, int size, HBox location) {
         location.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         Text hold_text = new Text(print);
         hold_text.setFont(Font.loadFont("file:resource/Fonts/PressStart2P.ttf", size));

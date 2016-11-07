@@ -38,11 +38,11 @@ public class ControlScreen implements Screen {
         
         pause2.setAlignment(Pos.TOP_CENTER);
         pause2.setLayoutY(175);
-        printer("D: MOVE RIGHT", 20, pause2);
+        printer("D or →: MOVE RIGHT", 20, pause2);
         
         pause3.setAlignment(Pos.TOP_CENTER);
         pause3.setLayoutY(215);
-        printer("A: MOVE LEFT", 20, pause3);
+        printer("A or ←: MOVE LEFT", 20, pause3);
         
         pause4.setAlignment(Pos.TOP_CENTER);
         pause4.setLayoutY(255);
@@ -53,7 +53,7 @@ public class ControlScreen implements Screen {
         return controlScreen;
     }
     
-    private void printer(String print, int size, HBox location) {
+    public void printer(String print, int size, HBox location) {
         location.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         Text hold_text = new Text(print);
         hold_text.setFont(Font.loadFont("file:resource/Fonts/PressStart2P.ttf", size));
@@ -62,5 +62,4 @@ public class ControlScreen implements Screen {
         location.getChildren().add(hold_text);
         controlScreen.getChildren().add(location);
     }
-}    
-
+} 

@@ -517,6 +517,7 @@ public class SpaceX33 extends Application {
         shipDisplay.setVisible(false);
         HUD.reset();
         highscoreScreen.setHighscores(scores);
+        shotsLeft = 10;
     }
     
     private void timer() {

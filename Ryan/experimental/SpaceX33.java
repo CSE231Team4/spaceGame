@@ -88,7 +88,6 @@ public class SpaceX33 extends Application {
     private boolean enableSlow = true;
     private int start_pause_none = 0;
     
-    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     final int NUM_LANES = 6; //number of lanes for obstacles to spawn
     private int window_width = 700;
     private int window_height = 900;
@@ -120,9 +119,6 @@ public class SpaceX33 extends Application {
         HUD.setShots(shotsLeft);
         HUD.updateAmmo();
         
-       
-        if(screenSize.getHeight() <= 900)
-            window_height = 800;
         shipObj.setW_Height(window_height);
         
         root.setPrefSize(window_width, window_height); //set the size of the pane
@@ -549,7 +545,6 @@ public class SpaceX33 extends Application {
         shipDisplay.setVisible(false);
         HUD.setShots(shotsLeft);
         HUD.reset();
-        gameOver.reset();
         highscoreScreen.setHighscores(scores);
     }
     
@@ -747,6 +742,7 @@ public class SpaceX33 extends Application {
         hudScene.getRoot().setVisible(false);
         startScene.getRoot().setVisible(true);
         state = STATE.START;
+        gameOver.reset();
         start_pause_none = 0;
         if(!enableSlow)
             time_hold = null;

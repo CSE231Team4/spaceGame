@@ -1,5 +1,10 @@
 package spacex33;
 
+
+import javafx.scene.media.AudioClip;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayerBuilder; 
 import com.sun.javafx.geom.BaseBounds;
 import com.sun.javafx.geom.transform.BaseTransform;
 import com.sun.javafx.jmx.MXNodeAlgorithm;
@@ -8,15 +13,9 @@ import com.sun.javafx.sg.prism.NGNode;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.media.AudioClip;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayerBuilder; 
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
+  
+
 
 public class Ship extends Node{
     final int SHIP_GAP = 10; //gap between lanes of the ship
@@ -31,8 +30,6 @@ public class Ship extends Node{
     private Image ship_hit = new Image("file:C:/Users/Jacqueline/Documents/NetBeansProjects/spaceX33/src/spacex33/resource/ship_inverse.png", true);
     ImageView shipView = new ImageView();
     private AudioClip asteroidHit = new AudioClip("file:C:/Users/Jacqueline/Documents/NetBeansProjects/spaceX33/src/spacex33/resource/asteroidHit.wav");
-    
-    
     public Ship(){
         super();
         width = 105;
@@ -81,6 +78,10 @@ public class Ship extends Node{
             shipView.setImage(ship_src);
             isHit = false;
         }
+    }
+    
+    public boolean isHit(){
+        return isHit;
     }
     
     public int getWidth(){

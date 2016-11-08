@@ -10,10 +10,14 @@ import com.sun.javafx.geom.transform.BaseTransform;
 import com.sun.javafx.jmx.MXNodeAlgorithm;
 import com.sun.javafx.jmx.MXNodeAlgorithmContext;
 import com.sun.javafx.sg.prism.NGNode;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.HBox;
@@ -27,6 +31,7 @@ import javafx.scene.text.Text;
  * @author asdas
  */
 public class StartScreen extends Node implements Screen{
+    private boolean isActive = true;
     Pane startScreen = new Pane();
     HBox startMessage = new HBox();
     HBox starter = new HBox();
@@ -36,15 +41,16 @@ public class StartScreen extends Node implements Screen{
     
     public StartScreen(){
         super();
+        startScreen.setBackground(Background.EMPTY);
         
-        // add start messages
+        
         startMessage.setAlignment(Pos.TOP_CENTER);
         startMessage.setLayoutY(200);
         printer("SPACEX33", 70, startMessage);
         
-        starter.setAlignment(Pos.TOP_CENTER);
+        /*starter.setAlignment(Pos.TOP_CENTER);
         starter.setLayoutY(350);
-        printer("PRESS 'SPACE' TO START", 25, starter);
+        printer("PRESS 'SPACE' TO START", 25, starter);*/
         
         starter2.setAlignment(Pos.TOP_CENTER);
         starter2.setLayoutY(400);
@@ -58,11 +64,32 @@ public class StartScreen extends Node implements Screen{
         starter4.setLayoutY(500);
         printer("PRESS 'H' FOR HIGHSCORES", 25, starter4);
 
+
     }
     
     public Pane initStartScreen(){
         return startScreen;
     }
+    
+    public void setState(){
+        isActive = !isActive;
+    }
+    
+    public boolean getState(){
+        return isActive;
+    }
+    
+    public Button createButton(int x, int y, Image img){
+        Button b = new Button();
+        b.setBackground(Background.EMPTY);
+        b.setVisible(true);
+        b.setLayoutX(x);
+        b.setLayoutY(y);
+        b.setGraphic(new ImageView(img));
+        startScreen.getChildren().add(b);
+        return b;
+    }
+    
     
     public void printer(String print, int size, HBox location) {
         location.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT);

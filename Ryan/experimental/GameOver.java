@@ -11,8 +11,13 @@ import com.sun.javafx.jmx.MXNodeAlgorithm;
 import com.sun.javafx.jmx.MXNodeAlgorithmContext;
 import com.sun.javafx.sg.prism.NGNode;
 import javafx.animation.FadeTransition;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -30,15 +35,48 @@ public class GameOver extends Node implements Screen {
     Pane gameOver = new Pane();
     HBox overMessage = new HBox();
     HBox restartMessage = new HBox();
+    HBox initials = new HBox();
+    String init = null;
+    TextField tf = new TextField();
     
     public GameOver(){
         super();
+        gameOver.setBackground(Background.EMPTY);
         overMessage.setAlignment(Pos.CENTER);
         printer("GAME OVER", 70, overMessage);
         
+        
+        
+        initials.setAlignment(Pos.CENTER);
+        initials.setTranslateY(100);
+        printer("ENTER YOUR INITIALS", 20, initials);
+        
         restartMessage.setAlignment(Pos.CENTER);
         restartMessage.setTranslateY(100);
-        printer("PRESS 'R' TO RESTART", 20, restartMessage);
+        printer("PRESS 'R' TO RESET", 20, restartMessage);
+        restartMessage.setVisible(false);
+        
+        tf.setBackground(Background.EMPTY);
+        tf.setStyle("-fx-text-inner-color: white; -fx-display-caret: false;");
+        tf.setAlignment(Pos.CENTER);
+        tf.setMaxWidth(200);
+        tf.setTranslateX(250);
+        tf.setTranslateY(600);
+        tf.setFont(Font.loadFont("file:resource/Fonts/PressStart2P.ttf", 40));
+        gameOver.getChildren().add(tf);
+        
+        tf.setOnKeyPressed(new EventHandler<KeyEvent>(){
+            @Override
+            public void handle(KeyEvent ke){
+                if(ke.getCode().equals(KeyCode.ENTER)){
+                    gameOver.getChildren().remove(initials);
+                    gameOver.getChildren().remove(tf);
+                    restartMessage.setVisible(true);
+                    
+                }
+            }
+        });
+        
     }
     
     public Pane initGameOver(){
@@ -53,6 +91,17 @@ public class GameOver extends Node implements Screen {
         location.setAlignment(Pos.CENTER);
         location.getChildren().add(hold_text);
         gameOver.getChildren().add(location);
+    }
+    
+    public void reset(){
+        tf.setText(null);
+        gameOver.getChildren().add(tf);
+        gameOver.getChildren().add(initials);
+        restartMessage.setVisible(false);
+    }
+    
+    public String getInitials(){
+        return init;
     }
 
     @Override

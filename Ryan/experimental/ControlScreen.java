@@ -24,6 +24,7 @@ public class ControlScreen implements Screen {
     HBox pause2 = new HBox();
     HBox pause3 = new HBox();
     HBox pause4 = new HBox();
+    HBox pause5 = new HBox();
     Pane controlScreen = new Pane();
     
     public ControlScreen(){
@@ -47,6 +48,10 @@ public class ControlScreen implements Screen {
         pause4.setAlignment(Pos.TOP_CENTER);
         pause4.setLayoutY(255);
         printer("Q: PAUSE/UNPAUSE", 20, pause4);
+        
+        pause5.setAlignment(Pos.TOP_CENTER);
+        pause5.setLayoutY(295);
+        printer("SPACE: SHOOT", 20, pause5);
     }
     
     public Pane initControlScreen(){

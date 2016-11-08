@@ -52,13 +52,14 @@ public class HeadsUpDisplay extends Node implements Screen{
     HBox ammoText = new HBox();
     HBox scoreText = new HBox();
     int scoreChange = 0;
+    int height = 900;
        
     
     
     public HeadsUpDisplay(){
         HUD.setBackground(Background.EMPTY);
-        scoreText.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-        ammoText.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+        scoreText.setPrefSize(WINDOW_WIDTH, height);
+        ammoText.setPrefSize(WINDOW_WIDTH, height);
         ammoIcon.setFitHeight(30);
         ammoIcon.setFitWidth(30);
         
@@ -188,6 +189,12 @@ public class HeadsUpDisplay extends Node implements Screen{
         initHearts();
         scoreChange = 0;
         updateAmmo();
+    }
+    
+    public void setHeight(int h){
+        height = h;
+        scoreText.setPrefSize(WINDOW_WIDTH, height);
+        ammoText.setPrefSize(WINDOW_WIDTH, height);
     }
     
     public int numHearts(){

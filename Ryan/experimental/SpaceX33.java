@@ -239,6 +239,8 @@ public class SpaceX33 extends Application {
     
     private void onUpdate() {
         if(state == STATE.GAME){
+            sounds.pauseStartMusic();
+            sounds.loopGameMusic();
             enableShip = true;
             shipDisplay.setVisible(true);
             asteroidUpdate();
@@ -266,6 +268,7 @@ public class SpaceX33 extends Application {
             enableShip = false;
         }
         if(state == STATE.START){
+            sounds.loopStartMusic();
             shipDisplay.setVisible(false);
         }
         
@@ -346,6 +349,7 @@ public class SpaceX33 extends Application {
                     iframes = 2000;
                     istart = System.currentTimeMillis();
                     root.getChildren().remove(asteroid);
+                    sounds.playShipHit();
                     
                     //shipObj.setHealth(shipObj.getHealth()-1);
                     shipObj.setShipState();
@@ -481,7 +485,6 @@ public class SpaceX33 extends Application {
         } catch (IOException ex) {
             Logger.getLogger(SpaceX33.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println(gameOver.getInitials());
     }
     
     private void setHighscores(){
@@ -575,7 +578,6 @@ public class SpaceX33 extends Application {
         Button s = startScreen.getStartButton();
                 s.setOnAction((ActionEvent event) -> {
                     start_to_game();
-                    System.out.println("hi");
                 });
         
         gameScene.getStylesheets().addAll(this.getClass().getResource("style.css").toExternalForm()); //sets the stylesheet of the scene (used for the background image)
@@ -649,8 +651,10 @@ public class SpaceX33 extends Application {
                             exit_highscores();
                     break;
                 case ESCAPE:
-                    if(state == STATE.START || state == STATE.PAUSE)
-                    System.exit(3);
+                    if(state == STATE.START || state == STATE.PAUSE){
+                        sounds.stopAllSounds();
+                        System.exit(3);
+                    }
                     break;
                 default:
                     break;
@@ -689,6 +693,7 @@ public class SpaceX33 extends Application {
     //for going from the game scene to the pause scene
     private void game_to_pause(){
         state = STATE.PAUSE;
+        sounds.pauseGameMusic();
         start_pause_none = 1;
         
         pauseScene.getRoot().setVisible(true);

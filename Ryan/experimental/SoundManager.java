@@ -16,11 +16,17 @@ public class SoundManager {
     private AudioClip buttonSelect = new AudioClip("file:resource/Sounds/button_select.wav");
     private AudioClip pickUp = new AudioClip("file:resource/Sounds/pick_up.aiff");
     private AudioClip asteroidKill = new AudioClip("file:resource/Sounds/asteroid_kill.aiff");
+    private AudioClip shipHit = new AudioClip("file:resource/Sounds/ship_hit.wav");
+    private AudioClip gameMusic = new AudioClip("file:resource/Sounds/music_2.mp3");
+    private AudioClip startMusic = new AudioClip("file:resource/Sounds/music_3.mp3");
     
     public SoundManager(){
-        laserSound.setVolume(0.5);
-        pickUp.setVolume(0.2);
-        asteroidKill.setVolume(0.1);
+        laserSound.setVolume(0.6);
+        pickUp.setVolume(0.3);
+        asteroidKill.setVolume(0.2);
+        shipHit.setVolume(0.25);
+        gameMusic.setVolume(0.2);
+        startMusic.setVolume(0.7);
     }
     
     public void playLaserSound(){
@@ -37,5 +43,37 @@ public class SoundManager {
     
     public void playAsteroidKill(){
         asteroidKill.play();
+    }
+    
+    public void playShipHit(){
+        shipHit.play();
+    }
+    
+    public void loopGameMusic(){
+        if(!gameMusic.isPlaying())
+            gameMusic.play();
+    }
+    
+    public void loopStartMusic(){
+        if(!startMusic.isPlaying())
+            startMusic.play();
+    }
+    
+    public void pauseGameMusic(){
+        gameMusic.stop();
+    }
+    
+    public void pauseStartMusic(){
+        startMusic.stop();
+    }
+    
+    public void stopAllSounds(){
+        laserSound.stop();
+        buttonSelect.stop();
+        pickUp.stop();
+        asteroidKill.stop();
+        shipHit.stop();
+        gameMusic.stop();
+        startMusic.stop();
     }
 }

@@ -5,11 +5,13 @@
  */
 package spacex33;
 
+import com.sun.deploy.util.StringUtils;
 import com.sun.javafx.geom.BaseBounds;
 import com.sun.javafx.geom.transform.BaseTransform;
 import com.sun.javafx.jmx.MXNodeAlgorithm;
 import com.sun.javafx.jmx.MXNodeAlgorithmContext;
 import com.sun.javafx.sg.prism.NGNode;
+
 import java.io.File;
 import java.util.ArrayList;
 import javafx.geometry.Pos;
@@ -37,6 +39,7 @@ public class HighscoreScreen extends Node implements Screen {
     HBox remove = new HBox();
     int[] scores = new int[10];
     File hs = new File("./resource/Text/highscores.txt");
+    String initials = "AAA";
     String format = "";
     int length = 0;
     int k = 0;
@@ -70,7 +73,11 @@ public class HighscoreScreen extends Node implements Screen {
             HBox h = new HBox();
             h.setAlignment(Pos.TOP_CENTER);
             h.setLayoutY(200 + 30*i);
-            format = (i+1) + ". " + scores[i];
+                
+            if(i == 9)
+                format = (i+1) + ".  " + String.format("%-12s", initials).replace(' ', '.') + String.format("%-9s", " " + String.valueOf(scores[i]));
+            else
+                format = (i+1) + ".   " + String.format("%-12s", initials).replace(' ', '.') + String.format("%-9s", " " + String.valueOf(scores[i]));
             printer(format, 20, h);
         }
         //}

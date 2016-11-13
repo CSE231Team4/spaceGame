@@ -10,11 +10,14 @@ import com.sun.javafx.geom.transform.BaseTransform;
 import com.sun.javafx.jmx.MXNodeAlgorithm;
 import com.sun.javafx.jmx.MXNodeAlgorithmContext;
 import com.sun.javafx.sg.prism.NGNode;
+import java.util.ArrayList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -30,8 +33,11 @@ import javafx.scene.text.Text;
  *
  * @author asdas
  */
-public class StartScreen extends Node implements Screen{
+public class StartScreen implements Screen{
+    private Image start = new Image("file:resource/Images/start_game.png", true);
+    
     private boolean isActive = true;
+    Button startGame = new Button();
     Pane startScreen = new Pane();
     HBox startMessage = new HBox();
     HBox starter = new HBox();
@@ -40,9 +46,9 @@ public class StartScreen extends Node implements Screen{
     HBox starter4 = new HBox();
     
     public StartScreen(){
-        super();
         startScreen.setBackground(Background.EMPTY);
         
+        startGame = createButton(175, 300, start);
         
         startMessage.setAlignment(Pos.TOP_CENTER);
         startMessage.setLayoutY(200);
@@ -63,20 +69,12 @@ public class StartScreen extends Node implements Screen{
         starter4.setAlignment(Pos.TOP_CENTER);
         starter4.setLayoutY(500);
         printer("PRESS 'H' FOR HIGHSCORES", 25, starter4);
-
+        
 
     }
     
     public Pane initStartScreen(){
         return startScreen;
-    }
-    
-    public void setState(){
-        isActive = !isActive;
-    }
-    
-    public boolean getState(){
-        return isActive;
     }
     
     public Button createButton(int x, int y, Image img){
@@ -90,6 +88,17 @@ public class StartScreen extends Node implements Screen{
         return b;
     }
     
+    public void hideButtons(){
+        startGame.setVisible(false);
+    }
+    public boolean getActive(){
+        return isActive;
+    }
+    
+    public void setActive(){
+        isActive = !isActive;
+    }
+    
     
     public void printer(String print, int size, HBox location) {
         location.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -101,25 +110,7 @@ public class StartScreen extends Node implements Screen{
         startScreen.getChildren().add(location);
     }
     
-    
-
-    @Override
-    protected NGNode impl_createPeer() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public BaseBounds impl_computeGeomBounds(BaseBounds bounds, BaseTransform tx) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    protected boolean impl_computeContains(double localX, double localY) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Object impl_processMXNode(MXNodeAlgorithm alg, MXNodeAlgorithmContext ctx) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Button getStartButton(){
+        return startGame;
     }
 }

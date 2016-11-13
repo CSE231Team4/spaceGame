@@ -14,6 +14,7 @@ import javafx.animation.FadeTransition;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -36,7 +37,6 @@ public class GameOver extends Node implements Screen {
     HBox overMessage = new HBox();
     HBox restartMessage = new HBox();
     HBox initials = new HBox();
-    String init = null;
     TextField tf = new TextField();
     
     public GameOver(){
@@ -44,8 +44,6 @@ public class GameOver extends Node implements Screen {
         gameOver.setBackground(Background.EMPTY);
         overMessage.setAlignment(Pos.CENTER);
         printer("GAME OVER", 70, overMessage);
-        
-        
         
         initials.setAlignment(Pos.CENTER);
         initials.setTranslateY(100);
@@ -72,7 +70,6 @@ public class GameOver extends Node implements Screen {
                     gameOver.getChildren().remove(initials);
                     gameOver.getChildren().remove(tf);
                     restartMessage.setVisible(true);
-                    
                 }
             }
         });
@@ -101,7 +98,7 @@ public class GameOver extends Node implements Screen {
     }
     
     public String getInitials(){
-        return init;
+        return tf.getText();
     }
 
     @Override

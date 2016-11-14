@@ -5,6 +5,7 @@ import com.sun.javafx.geom.transform.BaseTransform;
 import com.sun.javafx.jmx.MXNodeAlgorithm;
 import com.sun.javafx.jmx.MXNodeAlgorithmContext;
 import com.sun.javafx.sg.prism.NGNode;
+import java.applet.AudioClip;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -69,6 +70,10 @@ public class Ship extends Node{
             shipView.setImage(ship_src);
             isHit = false;
         }
+    }
+    
+    public boolean isHit(){
+        return isHit;
     }
     
     public int getWidth(){

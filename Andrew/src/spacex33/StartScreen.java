@@ -10,9 +10,12 @@ import com.sun.javafx.geom.transform.BaseTransform;
 import com.sun.javafx.jmx.MXNodeAlgorithm;
 import com.sun.javafx.jmx.MXNodeAlgorithmContext;
 import com.sun.javafx.sg.prism.NGNode;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -29,10 +32,11 @@ public class StartScreen extends Node implements Screen{
     HBox starter = new HBox();
     HBox starter2 = new HBox();
     HBox starter3 = new HBox();
-    //Button b = new Button();
+    HBox starter4 = new HBox();
     
     public StartScreen(){
         super();
+        
         // add start messages
         startMessage.setAlignment(Pos.TOP_CENTER);
         startMessage.setLayoutY(200);
@@ -50,9 +54,9 @@ public class StartScreen extends Node implements Screen{
         starter3.setLayoutY(450);
         printer("PRESS 'C' FOR CONTROLS", 25, starter3);
         
-        
-        
-        //startScreen.getChildren().add(b);
+        starter4.setAlignment(Pos.TOP_CENTER);
+        starter4.setLayoutY(500);
+        printer("PRESS 'H' FOR HIGHSCORES", 25, starter4);
 
     }
     
@@ -60,7 +64,7 @@ public class StartScreen extends Node implements Screen{
         return startScreen;
     }
     
-    private void printer(String print, int size, HBox location) {
+    public void printer(String print, int size, HBox location) {
         location.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         Text hold_text = new Text(print);
         hold_text.setFont(Font.loadFont("file:resource/Fonts/PressStart2P.ttf", size));

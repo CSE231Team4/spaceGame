@@ -49,6 +49,10 @@ public class SoundManager {
         shipHit.play();
     }
     
+    public void playGameMusic(){
+        gameMusic.play();
+    }
+    
     public void loopGameMusic(){
         if(!gameMusic.isPlaying())
             gameMusic.play();

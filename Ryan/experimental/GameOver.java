@@ -10,8 +10,13 @@ import com.sun.javafx.geom.transform.BaseTransform;
 import com.sun.javafx.jmx.MXNodeAlgorithm;
 import com.sun.javafx.jmx.MXNodeAlgorithmContext;
 import com.sun.javafx.sg.prism.NGNode;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.animation.FadeTransition;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -37,6 +42,7 @@ public class GameOver extends Node implements Screen {
     HBox overMessage = new HBox();
     HBox restartMessage = new HBox();
     HBox initials = new HBox();
+    String init = null;
     TextField tf = new TextField();
     
     public GameOver(){
@@ -61,12 +67,15 @@ public class GameOver extends Node implements Screen {
         tf.setTranslateX(250);
         tf.setTranslateY(600);
         tf.setFont(Font.loadFont("file:resource/Fonts/PressStart2P.ttf", 40));
+        addTextLimiter(tf, 3);
+
         gameOver.getChildren().add(tf);
         
         tf.setOnKeyPressed(new EventHandler<KeyEvent>(){
             @Override
             public void handle(KeyEvent ke){
                 if(ke.getCode().equals(KeyCode.ENTER)){
+                    init = tf.getText();
                     gameOver.getChildren().remove(initials);
                     gameOver.getChildren().remove(tf);
                     restartMessage.setVisible(true);
@@ -91,14 +100,32 @@ public class GameOver extends Node implements Screen {
     }
     
     public void reset(){
-        tf.setText(null);
+        tf.setText("");
+
         gameOver.getChildren().add(tf);
         gameOver.getChildren().add(initials);
         restartMessage.setVisible(false);
     }
     
     public String getInitials(){
-        return tf.getText();
+        return "AAA";
+    }
+    
+    public void restartMessage(){
+        restartMessage.setVisible(true);
+    }
+    
+    public static void addTextLimiter(final TextField tf, final int maxLength) {
+    tf.textProperty().addListener((final ObservableValue<? extends String> ov, final String oldValue, final String newValue) -> {
+        if(tf.getText() != null)
+        tf.setText(tf.getText().toUpperCase());
+        
+        if (tf.getText().length() > maxLength) {
+            String s = tf.getText().substring(0, maxLength);
+            s = s.toUpperCase();
+            tf.setText(s);
+        }
+    });
     }
 
     @Override

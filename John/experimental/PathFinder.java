@@ -20,6 +20,7 @@ public class PathFinder {
     private int openSpots; //min spots in path wanted in row
 	private int blockSize; //number of adjacent spots in path in row
 	private int blocks; //number of blocks in a row
+	private final int randomness = 2;
     
     public PathFinder(Ship ship, int laneNum) {
         lanes = laneNum;
@@ -40,9 +41,19 @@ public class PathFinder {
             //that is in previous row. Difficulty setting variable??
 			
         //fill first row of chunk
+		while(numSpots < openSpots) {
+			for(int j=0; j<x; j++) {
+				if((int)(Math.random() * 100) % randomness == 0 && numSpots < openSpots && spawnGrid[j][0] == false) {
+					spawnGrid[j][0] = true;
+					numSpots++;
+				}
+				if( numSpots >= openSpots)
+					break;
+			}
+		}
+		numSpots = 0;
+		
         for(int j=0; j<x; j++) {
-            if((int)(Math.random() * 100) % 2 == 0)
-                spawnGrid[j][0] = true;
             if(spawnGrid[j][0])
                 System.out.print("o");
             else
@@ -54,7 +65,7 @@ public class PathFinder {
         for(int i=1; i<y; i++) {
             //iterate through lanes in a row
             for(int j=0; j<x; j++) {
-				System.out.println("j = " + j);
+//				System.out.println("j = " + j);
                 if(spawnGrid[j][i-1]) {
 					blockSize++;
 				}
@@ -62,8 +73,8 @@ public class PathFinder {
                     spawnGrid[j][i] = false;
 					if(blockSize > 0) {
 						blockChoice = chooseSpot(blockSize);
-						System.out.println("blockchoice = " + blockChoice);
-						System.out.println("blocksize = " + blockSize);
+//						System.out.println("blockchoice = " + blockChoice);
+//						System.out.println("blocksize = " + blockSize);
 						spawnGrid[j - blockSize + blockChoice][i] = true;
 						numSpots++;
 					}
@@ -72,19 +83,31 @@ public class PathFinder {
             }
 			
 							
-			if(blockSize > 1) {
-					blockChoice = chooseSpot(blockSize);
-					System.out.println("blockchoice = " + blockChoice);
-					System.out.println("blocksize = " + blockSize);
-					spawnGrid[x - blockSize + blockChoice][i] = true;
-					numSpots++;
+			if(blockSize >= 1) {
+				blockChoice = chooseSpot(blockSize);
+//				System.out.println("blockchoice = " + blockChoice);
+//				System.out.println("blocksize = " + blockSize);
+				spawnGrid[x - blockSize + blockChoice][i] = true;
+				numSpots++;
 			}
 			
+			for(int j = 0; j<x; j++) {
+				if(spawnGrid[j][1])
+					System.out.print("o");
+				else
+					System.out.print("x");
+			}
+			System.out.println();
+			
+			//until rest of method is dealing with not having the correct amount of spots in the path in rows at this point
+			System.out.println(numSpots + " " + openSpots);
 			while(numSpots > openSpots) {
+				if(i == 1)
+					System.out.println("numspots > openspots");
 				System.out.println("in that method supposed to fix problem");
 				for(int j=0; (j<x); j++) {
 //					System.out.println("j = " + j);
-					if(Math.random() < .5) {
+					if(Math.random() < .5 && numSpots > openSpots) {
 //						System.out.println(x);
 						if(spawnGrid[j][i]) {
 							spawnGrid[j][i] = false;
@@ -95,10 +118,12 @@ public class PathFinder {
 			}			
 			//adds remaining open spots into the row;
 			while(numSpots < openSpots) {
+				if(i == 1)
+					System.out.println("numspots < openspots");
 				for(int j=0; (j<x); j++) {
 //					System.out.println("j = " + j);
-					if(Math.random() < .5) {
-//						System.out.println(x);
+					if(Math.random() < .1 && spawnGrid[j][i] == false && numSpots < openSpots) {
+						System.out.println("making the spawnGrid[" + j + "][" + i + "] true");
 						spawnGrid[j][i] = true;
 						numSpots++;
 					}
@@ -106,8 +131,10 @@ public class PathFinder {
 			}
 			
 			blockSize = 0;
+			blocks = 0;
+			//error in here
 			for(int j=0; j<x; j++) {
-				if(spawnGrid[j][i]=true) {
+				if(spawnGrid[j][i]==true) {
 					blockSize++;
 				}
 				else {
@@ -117,15 +144,24 @@ public class PathFinder {
 					blockSize = 0;
 				}
 			}
+			//if last spot in row is in the path
+			if(blockSize > 0) {
+				blocks++;
+			}
 			
+			numSpots = 0;
 			if(blocks == openSpots) {
-				for(int j=0; (j<x); j++) {
-	//			System.out.println("j = " + j);
-					if(Math.random() < .5) {
-	//						System.out.println(x);
-						spawnGrid[j][i] = true;
-						numSpots++;
-						break;
+				System.out.println("in blocks == openSpots thing");
+				while(numSpots < 1) {
+					for(int j=0; (j<x); j++) {
+		//			System.out.println("j = " + j);
+						if((int)(Math.random() * 100) % randomness == 0 
+								&& numSpots < 1 && spawnGrid[j][i] == false) {
+		//						System.out.println(x);
+							spawnGrid[j][i] = true;
+							numSpots++;
+							break;
+						}
 					}
 				}
 			}

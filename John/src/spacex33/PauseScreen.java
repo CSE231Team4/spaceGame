@@ -24,6 +24,7 @@ public class PauseScreen implements Screen {
     HBox pause = new HBox();
     HBox pause2 = new HBox();
     HBox pause3 = new HBox();
+    HBox pause4 = new HBox();
     Pane pauseScreen = new Pane();
     
     public PauseScreen(){
@@ -45,13 +46,17 @@ public class PauseScreen implements Screen {
         pause3.setAlignment(Pos.TOP_CENTER);
         pause3.setLayoutY(215);
         printer("PRESS 'R' TO RESTART", 20, pause3);
+        
+        pause4.setAlignment(Pos.TOP_CENTER);
+        pause4.setLayoutY(255);
+        printer("PRESS 'C' FOR CONTROLS", 20, pause4);
     }
     
     public Pane initPauseScreen(){
         return pauseScreen;
     }
     
-    private void printer(String print, int size, HBox location) {
+    public void printer(String print, int size, HBox location) {
         location.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         Text hold_text = new Text(print);
         hold_text.setFont(Font.loadFont("file:resource/Fonts/PressStart2P.ttf", size));

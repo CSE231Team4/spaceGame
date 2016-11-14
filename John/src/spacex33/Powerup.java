@@ -22,6 +22,7 @@ public class Powerup extends Node{
     int width, height, pow_num;
     Image cacheTimeSlow = new Image("file:resource/Images/clock_image.png", true);
     Image cacheHeal = new Image("file:resource/Images/heartImg.png", true);
+    Image cacheAmmoDrop = new Image("file:resource/Images/ammo.png", true);
     ImageView powerup = new ImageView();
     final int EDGE_POWERUP_GAP = 15; //the gap on the edge is 5px larger than the ship gap because it takes 5px extra on one side
     final int MID_POWERUP_GAP = EDGE_POWERUP_GAP + 5; //the gaps beween lanes in the middle are 5px bigger because it takes 5 off both sides
@@ -42,13 +43,19 @@ public class Powerup extends Node{
     }
     
     public Image choosePowerup(){
-        pow_num = (int)(Math.random() * 100) % 2;
+        pow_num = (int)(Math.random() * 100) % 3;
         
-        if(pow_num == 0){
-            return cacheTimeSlow;
+        switch(pow_num){
+            case 0: 
+                return cacheTimeSlow;
+            case 1:
+                return cacheHeal;
+            case 2: 
+                return cacheAmmoDrop;
+            default:
+                break;
         }
-        else
-            return cacheHeal;
+        return cacheHeal;
     }
     
     public int getType(){

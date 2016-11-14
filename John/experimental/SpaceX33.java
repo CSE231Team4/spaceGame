@@ -73,16 +73,20 @@ public class SpaceX33 extends Application {
     final int NUM_LANES = 6; //number of lanes for obstacles to spawn
     private int window_width = 700;
     private int window_height = 900;
-    private double speed = 7; //speed of asteroids descending toward ship
+    private double baseSpeed = 7; //used in reset method
+    private double speed = baseSpeed; //speed of asteroids descending toward ship
     private int spawnCount = 0; //counts amount of asteroids spawned in
-    private double speedAdd = 0.03; //used in algorithm to calculate difficulty. speedAdd = 1/10 of spawnCount
-    private double spawnRate = 0.; //spawn in speed of asteroids
+    private double baseSpeedAdd = .05;
+    private double speedAdd = baseSpeedAdd; //used in algorithm to calculate difficulty. speedAdd = 1/10 of spawnCount
+    private double baseSpawnRate = .03; //used in reset method
+    private double spawnRate = baseSpawnRate; //spawn in speed of asteroids
     private int iframes = 0;
     private long istart = 0;
     private Node toRemAst = new Asteroid();
     //private Node toRemSlow = new SlowTime();
     private Node toRemPower = new Powerup();
     int backnum = 0;
+    private int numScores = 10;
     
     private STATE state = STATE.START;
 
@@ -337,7 +341,7 @@ public class SpaceX33 extends Application {
     
     private void saveScore(){
         int store = 0;
-        int[] scores = new int[11];
+        int[] scores = new int[numScores+1];
         BufferedReader br;
         int i = 1;
         scores[0] = HUD.getScore();
@@ -347,10 +351,11 @@ public class SpaceX33 extends Application {
             String line = null;
         
             try {
-                while((line = br.readLine()) != null){
+                while((line = br.readLine()) != null && i < numScores){
                     scores[i] = Integer.valueOf(line);
                     System.out.println(scores[i]);
                     i++;
+                    System.out.println("i = " + i);
                 }
                 i--; //i counts an extra time when leaving loop
                 br.close();
@@ -372,11 +377,15 @@ public class SpaceX33 extends Application {
                 }
             }
         }
+        
+//        for(int j = 0; j <= i; j++) {
+//            System.out.println("scores[" + j + "] = " + scores[j]);
+//        }
 
         FileWriter writer;
         try {
             writer = new FileWriter(highscores, false);
-            for(int k = 0; k < i; k++){
+            for(int k = 0; k <= i; k++){
                 writer.write(scores[k] + "\n");
             }
             writer.close();
@@ -424,7 +433,7 @@ public class SpaceX33 extends Application {
         speed = 7;
         spawnCount = 0;
         speedAdd = 0.05;
-        spawnRate = 0.03; 
+        spawnRate = baseSpawnRate; 
         iframes = 0;
         istart = 0;
         shipDisplay.setTranslateX(shipObj.getGap());

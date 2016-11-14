@@ -39,7 +39,7 @@ public class HighscoreScreen extends Node implements Screen {
     HBox remove = new HBox();
     int[] scores = new int[10];
     File hs = new File("./resource/Text/highscores.txt");
-    String initials = "AAA";
+    String[] initials = new String[10];
     String format = "";
     int length = 0;
     int k = 0;
@@ -75,9 +75,9 @@ public class HighscoreScreen extends Node implements Screen {
             h.setLayoutY(200 + 30*i);
                 
             if(i == 9)
-                format = (i+1) + ".  " + String.format("%-12s", initials).replace(' ', '.') + String.format("%-9s", " " + String.valueOf(scores[i]));
+                format = (i+1) + ".  " + String.format("%-12s", initials[i]).replace(' ', '.') + String.format("%-9s", " " + String.valueOf(scores[i]));
             else
-                format = (i+1) + ".   " + String.format("%-12s", initials).replace(' ', '.') + String.format("%-9s", " " + String.valueOf(scores[i]));
+                format = (i+1) + ".   " + String.format("%-12s", initials[i]).replace(' ', '.') + String.format("%-9s", " " + String.valueOf(scores[i]));
             printer(format, 20, h);
         }
         //}
@@ -85,11 +85,13 @@ public class HighscoreScreen extends Node implements Screen {
         highscore.getChildren().addAll(scoreDisplay);
     }
     
-    public void setHighscores(int[] s){
+    public void setHighscores(int[] s, String[] init){
         clearScores();
          for(int i = 0; i < length; i++){
              if(scores[i] != s[i])
-             scores[i] = s[i];
+                scores[i] = s[i];
+             if(initials[i] != init[i])
+                 initials[i] = init[i];
          }
          updateScores();
     }

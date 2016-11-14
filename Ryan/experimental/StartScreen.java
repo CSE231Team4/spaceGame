@@ -28,6 +28,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import spacex33.SpaceX33.STATE;
 
 /**
  *
@@ -44,19 +45,20 @@ public class StartScreen implements Screen{
     HBox starter2 = new HBox();
     HBox starter3 = new HBox();
     HBox starter4 = new HBox();
+    STATE s = STATE.START;
     
     public StartScreen(){
         startScreen.setBackground(Background.EMPTY);
         
-        startGame = createButton(175, 300, start);
+        //startGame = createButton(175, 300, start);
         
         startMessage.setAlignment(Pos.TOP_CENTER);
         startMessage.setLayoutY(200);
         printer("SPACEX33", 70, startMessage);
         
-        /*starter.setAlignment(Pos.TOP_CENTER);
+        starter.setAlignment(Pos.TOP_CENTER);
         starter.setLayoutY(350);
-        printer("PRESS 'SPACE' TO START", 25, starter);*/
+        printer("PRESS 'SPACE' TO START", 25, starter);
         
         starter2.setAlignment(Pos.TOP_CENTER);
         starter2.setLayoutY(400);
@@ -77,6 +79,14 @@ public class StartScreen implements Screen{
         return startScreen;
     }
     
+    public STATE getState(){
+        return s;
+    }
+    
+    public void setState(STATE st){
+        s = st;
+    }
+    
     public Button createButton(int x, int y, Image img){
         Button b = new Button();
         b.setBackground(Background.EMPTY);
@@ -88,18 +98,8 @@ public class StartScreen implements Screen{
         return b;
     }
     
-    public void hideButtons(){
-        startGame.setVisible(false);
-    }
-    public boolean getActive(){
-        return isActive;
-    }
     
-    public void setActive(){
-        isActive = !isActive;
-    }
-    
-    
+
     public void printer(String print, int size, HBox location) {
         location.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         Text hold_text = new Text(print);

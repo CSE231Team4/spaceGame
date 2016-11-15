@@ -27,13 +27,14 @@ public class PathFinder {
         shipHeight = ship.getHeight();
         x = lanes;
         y = 50;
-        spawnGrid = new boolean[x][y];
 		openSpots = 3;
 		blockSize = 0;
 		blocks = 0;
     }
     
     public boolean[][] pathGen() {
+		System.out.println("generating...");
+		spawnGrid = new boolean[x][y];
 		int blockChoice = 0; //chosen spot in block of adjacent path spots in row
 		int numSpots = 0; //counter that tracks spots in path in current row
         //TODO: randomly select certain spots in each row to be true, path
@@ -52,14 +53,6 @@ public class PathFinder {
 			}
 		}
 		numSpots = 0;
-		
-        for(int j=0; j<x; j++) {
-            if(spawnGrid[j][0])
-                System.out.print("o");
-            else
-                System.out.print("x");
-        }
-        System.out.println();
 		
         //iterates through every spot in the grid, by row and every lane in row)
         for(int i=1; i<y; i++) {
@@ -91,20 +84,8 @@ public class PathFinder {
 				numSpots++;
 			}
 			
-			for(int j = 0; j<x; j++) {
-				if(spawnGrid[j][1])
-					System.out.print("o");
-				else
-					System.out.print("x");
-			}
-			System.out.println();
-			
 			//until rest of method is dealing with not having the correct amount of spots in the path in rows at this point
-			System.out.println(numSpots + " " + openSpots);
 			while(numSpots > openSpots) {
-				if(i == 1)
-					System.out.println("numspots > openspots");
-				System.out.println("in that method supposed to fix problem");
 				for(int j=0; (j<x); j++) {
 //					System.out.println("j = " + j);
 					if(Math.random() < .5 && numSpots > openSpots) {
@@ -118,12 +99,8 @@ public class PathFinder {
 			}			
 			//adds remaining open spots into the row;
 			while(numSpots < openSpots) {
-				if(i == 1)
-					System.out.println("numspots < openspots");
 				for(int j=0; (j<x); j++) {
-//					System.out.println("j = " + j);
 					if(Math.random() < .1 && spawnGrid[j][i] == false && numSpots < openSpots) {
-						System.out.println("making the spawnGrid[" + j + "][" + i + "] true");
 						spawnGrid[j][i] = true;
 						numSpots++;
 					}
@@ -132,26 +109,25 @@ public class PathFinder {
 			
 			blockSize = 0;
 			blocks = 0;
-			//error in here
+			//fixing problem with algorithm, when all single width blocks cause a loop
 			for(int j=0; j<x; j++) {
 				if(spawnGrid[j][i]==true) {
 					blockSize++;
 				}
 				else {
-					if(blockSize > 0) {
+					if(blockSize == 1) {
 						blocks++;
 					}
 					blockSize = 0;
 				}
 			}
 			//if last spot in row is in the path
-			if(blockSize > 0) {
+			if(blockSize == 1) {
 				blocks++;
 			}
 			
 			numSpots = 0;
 			if(blocks == openSpots) {
-				System.out.println("in blocks == openSpots thing");
 				while(numSpots < 1) {
 					for(int j=0; (j<x); j++) {
 		//			System.out.println("j = " + j);
@@ -186,4 +162,32 @@ public class PathFinder {
     private int chooseSpot(int n) {
 		return (int)(Math.random()*100) % n;
     }
+
+	/**
+	 * @return the x
+	 */
+	public int getX() {
+		return x;
+	}
+
+	/**
+	 * @return the y
+	 */
+	public int getY() {
+		return y;
+	}
+
+	/**
+	 * @param x the x to set
+	 */
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	/**
+	 * @param y the y to set
+	 */
+	public void setY(int y) {
+		this.y = y;
+	}
 }

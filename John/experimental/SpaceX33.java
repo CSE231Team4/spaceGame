@@ -1,6 +1,5 @@
 package spacex33;
 
-import java.awt.Button;
 import java.awt.Dimension;
 import java.awt.Label;
 import java.awt.Toolkit;
@@ -35,21 +34,40 @@ import java.util.logging.Logger;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.Border;
+import javafx.scene.media.AudioClip;
+import javafx.scene.shape.Rectangle;
 
 public class SpaceX33 extends Application {   
     private Scene gameScene;
     private Scene startScene;
     private Scene hudScene;
     private Scene pauseScene;
+    private Scene gameOverScene;
+    private Scene controlScene;
+    private Scene highscoreScene;
+    
+    private Button startGame;
     
     private AnimationTimer timer; 
     private Pane root; //declare the root pane
     private List<Node> asteroids = new ArrayList<>(); //array list of asteroids
     private List<ImageView> powerups = new ArrayList<>(); //array list of powerups
     private List<Node> background = new ArrayList<>(); //array of 3 background images used for cycling
+    private List<Node> farbackground = new ArrayList<>();
+    private List<ImageView> shots = new ArrayList<>();
     private double rand_hold = 0;
     private Node shipDisplay = new Ship(); //create the display node for the ship
     private ImageView astImg = new ImageView(); //create the imageviewer for the asteroids
@@ -59,34 +77,52 @@ public class SpaceX33 extends Application {
     private HeadsUpDisplay HUD = new HeadsUpDisplay();   
     private StartScreen startScreen = new StartScreen();
     private PauseScreen pauseScreen = new PauseScreen();
+    private GameOver gameOver = new GameOver();
+    private ControlScreen controlScreen = new ControlScreen();
+    private HighscoreScreen highscoreScreen = new HighscoreScreen();
     File highscores = new File("./resource/Text/highscores.txt");
+    File initials = new File("./resource/Text/initials.txt");
     
-    private Image bck = new Image("file:resource/Images/space_background.png",true);
+    private Image bck = new Image("file:resource/Images/space_background1.png",true);
     private ImageView b1, b2;
+    private ImageView far_b1, far_b2;
+    
+    private Image start = new Image("file:resource/Images/start_game.png", true);
+    private Image laser = new Image("file:resource/Images/laser.png", true);
+    private SoundManager sounds = new SoundManager();
     
     //private final SlowTime slowObj = new SlowTime();
     
     private boolean enableShip = false;
     private boolean enableSlow = true;
+    private int start_pause_none = 0;
     
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     final int NUM_LANES = 6; //number of lanes for obstacles to spawn
     private int window_width = 700;
     private int window_height = 900;
-    private double baseSpeed = 7; //used in reset method
-    private double speed = baseSpeed; //speed of asteroids descending toward ship
+    private double speed = 7; //speed of asteroids descending toward ship
     private int spawnCount = 0; //counts amount of asteroids spawned in
-    private double baseSpeedAdd = .05;
-    private double speedAdd = baseSpeedAdd; //used in algorithm to calculate difficulty. speedAdd = 1/10 of spawnCount
-    private double baseSpawnRate = .03; //used in reset method
-    private double spawnRate = baseSpawnRate; //spawn in speed of asteroids
+    private double speedAdd = 0.05; //used in algorithm to calculate difficulty. speedAdd = 1/10 of spawnCount
+    private double spawnRate = 1; //spawn in speed of asteroids
     private int iframes = 0;
     private long istart = 0;
+    private double powerSpawn = 0.002;
+    private double powerSpawnHold = 0;
+    private boolean pickedUp = false;
     private Node toRemAst = new Asteroid();
     //private Node toRemSlow = new SlowTime();
     private Node toRemPower = new Powerup();
+    private Node toRemShot = new Rectangle();
+    private int shotsLeft = 10;
     int backnum = 0;
-    private int numScores = 10;
+    Timeline POWER_UP_TIME;
+    Duration time_hold;
+    int[] scores = new int[101];
+    String[] initial = new String[101];
+	
+	private boolean newChunkSpawned = false;
+	private PathFinder pf = new PathFinder(shipObj, NUM_LANES);
     
     private STATE state = STATE.START;
 
@@ -94,10 +130,14 @@ public class SpaceX33 extends Application {
         root = new Pane(); //initialize the pane
         initBackground();
         root.setId("pane"); //set the ID of the pane for the CSS file
+        HUD.setShots(shotsLeft);
+        HUD.updateAmmo();
         
-       
-        if(screenSize.getHeight() <= 900)
+        if(screenSize.getHeight() <= 950)
             window_height = 800;
+        shipObj.setW_Height(window_height);
+        HUD.setHeight(window_height);
+        
         shipObj.setW_Height(window_height);
         
         root.setPrefSize(window_width, window_height); //set the size of the pane
@@ -105,8 +145,9 @@ public class SpaceX33 extends Application {
         shipDisplay = shipObj.initGraphics(); //calls the initShip method to load in the graphics for the ship
         root.getChildren().add(b1);
         root.getChildren().add(b2);
+        root.getChildren().add(far_b1);
+        root.getChildren().add(far_b2);
         root.getChildren().add(shipDisplay); //adds the shipDisplay to the root so it can be displayed
-        shipDisplay.setVisible(false);
 
         //root.getChildren().add(left);
         
@@ -132,46 +173,82 @@ public class SpaceX33 extends Application {
         return pauseScreen.initPauseScreen();
     }
     
-    private void initBackground(){
-        b1 = new ImageView(bck);
-        b1.setScaleY(1.1);
-        b1.setScaleX(1.1);
-        background.add(b1);
-        b2 = new ImageView(bck);
-        b2.setScaleX(1.1);
-        b2.setScaleY(1.1);
-        b2.setTranslateY(window_height);
-        background.add(b2);
+    private Parent createGameOverScreen(){
+        return gameOver.initGameOver();
     }
     
-    private Node spawnAsteroid() {
-        Asteroid ast = new Asteroid();
+    private Parent createControlScreen() {
+        return controlScreen.initControlScreen();
+    }
+    
+    private Parent createHighscoreScreen(){
+        return highscoreScreen.initHighscoreScreen();
+    }
+    
+    private void initBackground(){
+        b1 = new ImageView(bck);
+        b1.setScaleY(1.5);
+        b1.setScaleX(1.5);
+        background.add(b1);
+        b2 = new ImageView(bck);
+        b2.setScaleX(1.5);
+        b2.setScaleY(1.5);
+        b2.setTranslateY(window_height);
+        background.add(b2);
         
-        astImg = ast.initGraphics(); //gets the graphic loaded in the Asteroid class
-        spawnCount++;
+        far_b1 = new ImageView(bck);
+        far_b1.setScaleY(1.1);
+        far_b1.setScaleX(1.1);
+        far_b1.setRotate(180);
+        farbackground.add(far_b1);
+        far_b2 = new ImageView(bck);
+        far_b2.setScaleX(1.1);
+        far_b2.setScaleY(1.1);
+        far_b2.setRotate(180);
+        far_b2.setTranslateY(window_height);
+        farbackground.add(far_b2);
         
-        int lane = getLane(); //gets a lane number between 0-5
-       
-        int obs_location = ast.getEdgeGap() + lane * (ast.getWidth() + ast.getMidGap()); //formula for calculating the X coordinate of the obstacle
-        astImg.setTranslateX(obs_location); //sets the x coordinate of the obstacle to obs_location
-        astImg.setTranslateY(-50);
-        root.getChildren().add(astImg); //adds the graphic for the asteroid to the root
-        refreshHUD();
-        
+    }
+    
+    private void spawnAsteroid(boolean[][] grid) {
+ 		for(int i = 0; i < pf.getY(); i++) {
+ 			for(int j = 0; j < pf.getX(); j++) {
+ 				if(grid[j][i] == false && Math.random() < spawnRate) {
+ 					Asteroid ast = new Asteroid();
+ 
+ 					astImg = ast.initGraphics(); //gets the graphic loaded in the Asteroid class
+ 					spawnCount++;
+ 					
+ 					int lane = j; //gets a lane number between 0-5
+ 
+ 					int obs_location = ast.getEdgeGap() + 
+							lane * (ast.getWidth() + ast.getMidGap()); //formula for calculating the X coordinate of the obstacle
+ 					astImg.setTranslateX(obs_location); //sets the x coordinate of the obstacle to obs_location
+ 					astImg.setTranslateY(-50 - (i + 1) * ast.getWidth() * 2);
+ 					root.getChildren().add(astImg); //adds the graphic for the asteroid to the root
+ 					asteroids.add(astImg);
+ 				}
+ 			}
+ 		}
+ 		newChunkSpawned = true;
 
-        return astImg;
+    }
+    
+    private void spawnShot() {
+        if(shotsLeft > 0) {
+            sounds.playLaserSound();
+            ImageView shot = new ImageView(laser);
+            shots.add(shot);
+            shot.setTranslateX(shipDisplay.getTranslateX() + 45);
+            shot.setTranslateY(shipDisplay.getTranslateY());
+            root.getChildren().add(shot);
+            shotsLeft--;
+            HUD.setShots(shotsLeft);
+            HUD.updateAmmo();
+        }
     }
     
     private ImageView spawnPowerup(){
-        /*SlowTime st = new SlowTime();
-        slowImg = st.initGraphics();
-        int plane = getLane();
-        int p_location = st.getEdgeGap() + plane * (st.getWidth() + st.getMidGap());
-        slowImg.setTranslateX(p_location);
-        root.getChildren().add(slowImg);
-        refreshHUD(); 
-        
-        return slowImg;*/
         Powerup powerup = new Powerup();
         powerupImage = powerup.initGraphics();
         powerupImage.setX(powerup.getType());
@@ -179,15 +256,11 @@ public class SpaceX33 extends Application {
         int p_location = powerup.getEdgeGap() + plane * (powerup.getWidth() + powerup.getMidGap());
         powerupImage.setTranslateX(p_location);
         root.getChildren().add(powerupImage);
-        refreshHUD();
         
         return powerupImage;
     }
     
     private void refreshHUD(){
-        /*heartDisplay1.toFront();
-        heartDisplay2.toFront();
-        heartDisplay3.toFront();*/
         hudScene.getRoot().toFront(); //makes sure the HUD is always on top of the obstacles/ship
     }
     
@@ -196,37 +269,45 @@ public class SpaceX33 extends Application {
         return (int)((Math.random() * 100) % NUM_LANES); //returns a number between 0-5 to decide which lane to spawn the asteroids
     }
     
-    private int choose(){
-        return (int)((Math.random() * 100) % 2);
-    }
-    
     private void onUpdate() {
+        if(state != STATE.PAUSE){
+            backgroundUpdate();
+        }
+        
         if(state == STATE.GAME){
             enableShip = true;
             shipDisplay.setVisible(true);
             asteroidUpdate();
             powerupUpdate();
             spawnUpdate();
+            shotUpdate();
+            refreshHUD();
+			
+			if(asteroids.isEmpty())
+ 				newChunkSpawned = false;
+
+ 			if(newChunkSpawned == false) {
+ 				spawnAsteroid(pf.pathGen());
+ 				newChunkSpawned = true;
+ 			}
+
 
             rand_hold = Math.random();
 
-            if (rand_hold < spawnRate && rand_hold > 0.002) {
-                asteroids.add(spawnAsteroid()); //randomly spawns an obstacle, and adds the graphic for the asteroid to the asteroid list
-            }
-            if(rand_hold < 0.002 && enableSlow == true){
+            if(rand_hold < powerSpawn && enableSlow == true){
                 powerups.add(spawnPowerup());
+            }
+            if(rand_hold < 0.5){
+                sounds.loopGameMusic();
             }
             checkState();
         }
-        
-        if(state != STATE.PAUSE){
-            backgroundUpdate();
-        }
-        
+
         if(state == STATE.PAUSE){
             enableShip = false;
         }
         if(state == STATE.START){
+            sounds.loopStartMusic();
             shipDisplay.setVisible(false);
         }
         
@@ -237,9 +318,9 @@ public class SpaceX33 extends Application {
             asteroid.setTranslateY(asteroid.getTranslateY() + speed); //translates the asteroid down 12 pixels every update
             //asteroid.setRotate(asteroid.getRotate() + speed);
             if(asteroid.getTranslateY() > window_height){
-                toRemAst = asteroid;
                 root.getChildren().remove(asteroid);
                 HUD.setScore(HUD.getScore() + 50);
+                toRemAst = asteroid;
             }
         }
         asteroids.remove(toRemAst);
@@ -261,10 +342,28 @@ public class SpaceX33 extends Application {
         for(Node bg : background){
             bg.setTranslateY(bg.getTranslateY() + speed/3);
             
+            if(bg.getTranslateY() > window_height+10)
+                bg.setTranslateY(0-window_height);
+        }
+        
+        for(Node bg : farbackground){
+            bg.setTranslateY(bg.getTranslateY() + speed/4);
+            
             if(bg.getTranslateY() > window_height)
                 bg.setTranslateY(0-window_height);
         }
     }
+    
+     private void shotUpdate() {
+        for(ImageView shot : shots) {
+            shot.setTranslateY(shot.getTranslateY() - 15);
+            if(shot.getTranslateY() < 15) {
+                toRemShot = shot;
+                root.getChildren().remove(shot);
+            }
+        }
+        shots.remove(toRemShot);
+    } 
     
     private void spawnUpdate(){
         if (spawnRate < 2.0) {//sets limit on spawning
@@ -282,6 +381,12 @@ public class SpaceX33 extends Application {
     
     private void checkState(){
         HUD.updateScore();
+        checkAsteroidState();
+        checkPowerupState();
+        checkShotState();
+    }
+    
+    private void checkAsteroidState(){
         for (Node asteroid : asteroids) {
             if (System.currentTimeMillis() - istart > iframes) {
                 shipObj.checkShipState();
@@ -290,44 +395,60 @@ public class SpaceX33 extends Application {
                     iframes = 2000;
                     istart = System.currentTimeMillis();
                     root.getChildren().remove(asteroid);
+                    sounds.playShipHit();
                     
                     //shipObj.setHealth(shipObj.getHealth()-1);
                     shipObj.setShipState();
               
                     HUD.hasHit();
-                
                     if(HUD.numHearts() <= 0){
                         state = STATE.OVER;
                         enableShip = false;
                         timer.stop(); //stops the timer so asteroids no longer spawn
                         saveScore();
-                        gameOverText();
+                        gameOverScene.getRoot().setVisible(true);
+                        gameOverScene.getRoot().toFront();
                     }
-                    //the above section is used for printing the "YOU LOSE" font
-                    //return;
                 } 
             }
             else {
                 iframes--;
             }
         }
-        
+    }
+    
+    private void checkPowerupState(){
         for(ImageView power : powerups){
             if(isCollision(power, shipDisplay)){
+                sounds.playPickUp();
                 toRemPower = power;
                 root.getChildren().remove(power);
                 
                 switch((int)power.getX()){
                     case 0:
+                        if(!pickedUp){
+                        pickedUp = true;
                         HUD.hasSlowPower();
                         enableSlow = false;
                         speed = speed / 2;
                         spawnRate = spawnRate / 2;
-                        timer(); 
+                        powerSpawnHold = powerSpawn;
+                        powerSpawn = 0;
+                        timer();
+                        }
                         break;
                     case 1: 
                         if(HUD.numHearts() < 5)
                         HUD.hasHeartPower();
+                        break;
+                    case 2:
+                        if(shotsLeft < 9999)
+                            shotsLeft += 10;
+                        if(shotsLeft >= 9999)
+                            shotsLeft = 9999;
+                        HUD.setShots(shotsLeft);   
+                        HUD.updateAmmo();
+                        break;
                     default: break;
                 }
             }
@@ -335,91 +456,116 @@ public class SpaceX33 extends Application {
         powerups.remove(toRemPower);
     }
     
+    private void checkShotState(){
+        
+        for(ImageView shot : shots) {
+            for(Node ast:asteroids){
+                if(isCollision(shot, ast)){
+                    sounds.playAsteroidKill();
+                    toRemShot = shot;
+                    toRemAst = ast;
+                    HUD.setScore(HUD.getScore() + 100);
+                    root.getChildren().remove(shot);
+                    root.getChildren().remove(ast);
+                }
+            }
+        }
+        asteroids.remove(toRemAst);
+        shots.remove(toRemShot);
+    }
+    
     private boolean isCollision(Node obstacle1, Node obstacle2){
         return obstacle1.getBoundsInParent().intersects(obstacle2.getBoundsInParent()); //returns whether or not the bounds intersect
     }
     
-    private void saveScore(){
+    
+    
+    int i;
+    int k;
+    
+    private void loadScore(){
         int store = 0;
-        int[] scores = new int[numScores+1];
+        String store2 = "";
+        
         BufferedReader br;
-        int i = 1;
+        BufferedReader br2;
+        i = 1;
+        k = 1;
         scores[0] = HUD.getScore();
-        System.out.println("gotten score = " + scores[0]);
+        initial[0] = gameOver.getInitials();
+        
         try {
             br = new BufferedReader(new FileReader(highscores));
+            br2 = new BufferedReader(new FileReader(initials));
             String line = null;
-        
+            String line2 = null;
             try {
-                while((line = br.readLine()) != null && i < numScores){
+                while((line = br.readLine()) != null){
                     scores[i] = Integer.valueOf(line);
-                    System.out.println(scores[i]);
+                    if((line.equals("")) == false);
                     i++;
-                    System.out.println("i = " + i);
                 }
-                i--; //i counts an extra time when leaving loop
+                
+                while((line2 = br2.readLine()) != null){
+                    initial[k] = line;
+                    if((line2.equals("")) == false);
+                    k++;
+                }
+                
+                highscoreScreen.setLength(i);
+                if(i >= 100){
+                    i--; //i counts an extra time when leaving loop
+                    k--;
+                }
                 br.close();
+                br2.close();
             } catch (IOException ex) {
                 Logger.getLogger(SpaceX33.class.getName()).log(Level.SEVERE, null, ex);
             }
         } catch (FileNotFoundException ex) {
             Logger.getLogger(SpaceX33.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        System.out.println("i = " + i + " after while loop");
-        
+        if(scores.length > 1){
         for(int j = 0; j < i; j++){
             for(int k = 0; k < i; k++){
                 if(scores[k+1] > scores[k]){
                     store = scores[k];
+                    store2 = initial[k];
+                    
                     scores[k] = scores[k+1];
+                    initial[k] = initial[k+1];
+                    
                     scores[k+1] = store;
+                    initial[k+1] = store2;
                 }
             }
         }
-        
-//        for(int j = 0; j <= i; j++) {
-//            System.out.println("scores[" + j + "] = " + scores[j]);
-//        }
+        }
+    }
 
+    private void saveScore(){
+        loadScore();
+        
         FileWriter writer;
+        FileWriter writer2;
         try {
             writer = new FileWriter(highscores, false);
-            for(int k = 0; k <= i; k++){
+            writer2 = new FileWriter(initials, false);
+            for(int k = 0; k < i; k++){
                 writer.write(scores[k] + "\n");
+                writer2.write(initial[k] + "\n");
             }
             writer.close();
+            writer2.close();
         } catch (IOException ex) {
             Logger.getLogger(SpaceX33.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    private void gameOverText(){
-        String lose = "GAME OVER";
-        HBox hBox = new HBox();
-        hBox.setPrefSize(window_width, window_height);
-        hBox.setAlignment(Pos.CENTER);
-        //hBox.setTranslateX(180); //sets x coordinate of the HBox
-        //hBox.setTranslateY(420); //sets y coordinate of the HBox
-        //I couldn't figure out how to center the text and just tried to eyeball it, if anyone has any fixes
-        root.getChildren().add(hBox); //adds the hBox object to the root
-
-        for (int i = 0; i < lose.toCharArray().length; i++) {
-            char letter = lose.charAt(i);
-            Text text = new Text(String.valueOf(letter));
-            //text.setFont(Font.font(50));
-            text.setFont(Font.loadFont("file:resource/Fonts/PressStart2P.ttf", 40));
-
-            text.setOpacity(0);
-            text.setFill(Color.WHITE);
-            hBox.getChildren().add(text);
-            FadeTransition ft = new FadeTransition(Duration.seconds(0.66), text);
-            ft.setToValue(1);
-            ft.setDelay(Duration.seconds(i * 0.15));
-            ft.play();
-        }
+    private void setHighscores(){
+        highscoreScreen.setHighscores(scores, initial);
     }
-    
+
     private void reset(){
         for(Node asteroid : asteroids){
             root.getChildren().remove(asteroid);
@@ -427,53 +573,90 @@ public class SpaceX33 extends Application {
         for(Node powerup: powerups){
             root.getChildren().remove(powerup);
         }
+        
+        for(ImageView shot : shots)
+            root.getChildren().remove(shot);
+        
         asteroids.removeAll(asteroids);
         powerups.removeAll(powerups);
         root.getChildren().remove(HUD);
         speed = 7;
         spawnCount = 0;
+        shotsLeft = 10;
         speedAdd = 0.05;
-        spawnRate = baseSpawnRate; 
+        spawnRate = 0.03; 
+        
         iframes = 0;
         istart = 0;
+        time_hold = null;
+        enableSlow = true;
         shipDisplay.setTranslateX(shipObj.getGap());
+        if(shipObj.isHit())
+        shipObj.setShipState();
+        shipDisplay.setVisible(false);
+        HUD.setShots(shotsLeft);
         HUD.reset();
+        highscoreScreen.setHighscores(scores, initial);
     }
     
     private void timer() {
-        Timeline POWER_UP_TIME = new Timeline (new KeyFrame(
-        Duration.seconds(5.0),
+        POWER_UP_TIME = new Timeline (new KeyFrame(
+        Duration.millis(5000),
         ae -> slowThings()));
         POWER_UP_TIME.play();
     }
-    
-    /*private void scoreTimer() {
-        Timeline SCORE_INCREMENT = new Timeline (new KeyFrame(
-        Duration.seconds(2.0),
-        ae -> score()));
-        SCORE_INCREMENT.play();
-    }*/
     
     private void slowThings() {
         speed = speed * 2;
         spawnRate = spawnRate * 2;
         enableSlow = true;
+        powerSpawn = powerSpawnHold;
+        pickedUp = false;
     }
+    
+    private Button buttonFormatting(int x, int y){
+        Button b = new Button();
+        b.setLayoutX(x);
+        b.setLayoutY(y);
+        b.setAlignment(Pos.CENTER);
+        return b;
+    }
+    
+
     
     @Override
     public void start(Stage stage) throws Exception {
-        PathFinder pf = new PathFinder(shipObj, NUM_LANES);
-        pf.pathGen();
+        loadScore();
+        setHighscores();
         gameScene = new Scene(createContent()); //creates the game scene
         hudScene = new Scene(createHUD()); //creates the HUD overlay
         startScene = new Scene(createStartScreen());
         pauseScene = new Scene(createPauseScreen());
+        gameOverScene = new Scene(createGameOverScreen());
+        controlScene = new Scene(createControlScreen());
+        highscoreScene = new Scene(createHighscoreScreen());
 
-        ((Pane)gameScene.getRoot()).getChildren().add(startScene.getRoot()); //puts the HUD overlay over the game screen
+        ((Pane)gameScene.getRoot()).getChildren().add(startScene.getRoot()); //adds the start scene
+        ((Pane)gameScene.getRoot()).getChildren().add(hudScene.getRoot());
+        ((Pane)gameScene.getRoot()).getChildren().add(pauseScene.getRoot());
+        ((Pane)gameScene.getRoot()).getChildren().add(gameOverScene.getRoot());
+        ((Pane)gameScene.getRoot()).getChildren().add(controlScene.getRoot());
+        ((Pane)gameScene.getRoot()).getChildren().add(highscoreScene.getRoot());
+        
+        //the only scene that is visible to begin with is the start scene
+        hudScene.getRoot().setVisible(false);
+        pauseScene.getRoot().setVisible(false);
+        gameOverScene.getRoot().setVisible(false);
+        controlScene.getRoot().setVisible(false);
+        highscoreScene.getRoot().setVisible(false);
+        
         gameScene.getStylesheets().addAll(this.getClass().getResource("style.css").toExternalForm()); //sets the stylesheet of the scene (used for the background image)
 
         stage.setScene(gameScene); 
         stage.setResizable(false); //makes it not possible to resize the window since this breaks the game
+        
+        if(state == STATE.OVER)
+            stage.showAndWait();
         
         TranslateTransition shipSlide = new TranslateTransition(Duration.millis(100), shipDisplay); //sets up the ship to slide over the course of 100ms (0.1s). Change the Duration.millis to make the animation slower or faster
         stage.getScene().setOnKeyPressed(event -> {
@@ -493,41 +676,45 @@ public class SpaceX33 extends Application {
                     }
                     break;
                 case SPACE:
-                    if(state == STATE.START){
-                    ((Pane)gameScene.getRoot()).getChildren().remove(startScene.getRoot());
-                    ((Pane)gameScene.getRoot()).getChildren().add(hudScene.getRoot());
-                    state = STATE.GAME;
-                    }
-                     
+                    if(state == STATE.START)
+                        start_to_game();
+                    else if(state == STATE.GAME)
+                        spawnShot();
                     break;
                 case Q:
-                    if(state == STATE.GAME){
-                        state = STATE.PAUSE;
-                        //((Pane)gameScene.getRoot()).getChildren().remove(hudScene.getRoot()); 
-                        ((Pane)gameScene.getRoot()).getChildren().add(pauseScene.getRoot());
-                    }
-                    else{
-                        if(state != STATE.START && state != STATE.OVER){
-                            state = STATE.GAME;
-                            ((Pane)gameScene.getRoot()).getChildren().remove(pauseScene.getRoot());
-                            //((Pane)gameScene.getRoot()).getChildren().add(hudScene.getRoot()); 
-                        }
-                    }
-                    System.out.println(state);
+                    if(state == STATE.GAME)
+                        game_to_pause();
+                        
+                    else
+                        if(state == STATE.PAUSE)
+                            pause_to_game();
                     break;
                 case R:
-                    if(state == STATE.PAUSE){
-                        reset();
-                        ((Pane)gameScene.getRoot()).getChildren().remove(pauseScene.getRoot());
-                        ((Pane)gameScene.getRoot()).getChildren().remove(hudScene.getRoot());
-                        state = STATE.START;
-                        ((Pane)gameScene.getRoot()).getChildren().add(startScene.getRoot());
-                        
-                    }   
+                    if(state == STATE.PAUSE)
+                        pause_to_start();  
+                    
+                    if(state == STATE.OVER)
+                        over_to_start();
+                    break;
+                case C:
+                    if(state == STATE.START || state == STATE.PAUSE)
+                        to_control();
+                    else
+                        if(state == STATE.CONTROL)
+                            exit_control();
+                    break;
+                case H:
+                    if(state == STATE.START)
+                        to_highscores();
+                    else
+                        if(state == STATE.SCORE)
+                            exit_highscores();
                     break;
                 case ESCAPE:
-                    if(state != STATE.GAME)
-                    System.exit(3);
+                    if(state == STATE.START || state == STATE.PAUSE){
+                        sounds.stopAllSounds();
+                        System.exit(3);
+                    }
                     break;
                 default:
                     break;
@@ -540,11 +727,112 @@ public class SpaceX33 extends Application {
         START,
         GAME,
         PAUSE,
-        OVER
+        OVER,
+        CONTROL,
+        SCORE
     };
     
     public static void main(String[] args) {
         launch(args);
+    }
+    
+    
+    
+    //the methods from this point are used for when hotkeys/buttons are pressed
+    
+    //for going from the start scene to the game scene 
+    private void start_to_game(){
+        sounds.playButtonSelect();
+        sounds.pauseStartMusic();
+        sounds.playGameMusic();
+        startScene.getRoot().setVisible(false);
+        hudScene.getRoot().setVisible(true);
+        //PathFinder pf = new PathFinder(shipObj, NUM_LANES);
+        //pf.pathGen();
+        state = STATE.GAME;
+        start_pause_none = -1;
+    }
+    
+    //for going from the game scene to the pause scene
+    private void game_to_pause(){
+        state = STATE.PAUSE;
+        sounds.playButtonSelect();
+        sounds.pauseGameMusic();
+        start_pause_none = 1;
+        
+        pauseScene.getRoot().setVisible(true);
+        pauseScene.getRoot().toFront();
+        if(!enableSlow){
+            time_hold = POWER_UP_TIME.getCurrentTime();
+            POWER_UP_TIME.stop();
+        }
+    }
+    
+    //for going between the pause scene and the game scene
+    private void pause_to_game(){
+        state = STATE.GAME;
+        start_pause_none = -1;
+        pauseScene.getRoot().setVisible(false);
+        controlScene.getRoot().setVisible(false);
+        if(!enableSlow)
+            POWER_UP_TIME.playFrom(time_hold);
+    }
+    
+    //for going between the pause scene and the start scene
+    private void pause_to_start(){
+        reset();
+        sounds.playButtonSelect();
+        pauseScene.getRoot().setVisible(false);
+        hudScene.getRoot().setVisible(false);
+        startScene.getRoot().setVisible(true);
+        state = STATE.START;
+        start_pause_none = 0;
+        if(!enableSlow)
+            time_hold = null;
+    }
+    
+    //for going from the over scene to the start scene
+    private void over_to_start(){
+        reset();
+        sounds.playButtonSelect();
+        sounds.pauseGameMusic();
+        gameOverScene.getRoot().setVisible(false);
+        hudScene.getRoot().setVisible(false);
+        state = STATE.START;
+        start_pause_none = 0;
+        gameOver.reset();
+        startScene.getRoot().setVisible(true);
+        timer.start();
+    }
+    
+    //for going to the control scene
+    private void to_control(){
+        sounds.playButtonSelect();
+        controlScene.getRoot().setVisible(true);
+        controlScene.getRoot().toFront();
+        state = STATE.CONTROL;
+    }
+    
+    //for exiting the control scene
+    private void exit_control(){
+        controlScene.getRoot().setVisible(false);
+        if(start_pause_none == 0)
+            state = STATE.START;
+        if(start_pause_none == 1)
+            state = STATE.PAUSE;
+    }
+    
+    //for going to the highscore scene
+    private void to_highscores(){
+        sounds.playButtonSelect();
+        highscoreScene.getRoot().setVisible(true);
+        state = STATE.SCORE;
+    }
+    
+    //for exiting the highscore scene
+    private void exit_highscores(){
+        highscoreScene.getRoot().setVisible(false);
+        state = STATE.START;
     }
 }
 

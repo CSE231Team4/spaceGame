@@ -5,15 +5,10 @@
  */
 package spacex33;
 
-import javafx.scene.layout.HBox;
-
 /**
  *
  * @author asdas
  */
-public interface Screen {
-    final int WINDOW_WIDTH = 700;
-    final int WINDOW_HEIGHT = 900;
+public class AsteroidExplosion {
     
-    void printer(String print, int size, HBox location);
 }

@@ -21,10 +21,10 @@ public class SoundManager {
     private AudioClip startMusic = new AudioClip("file:resource/Sounds/music_3.mp3");
     
     public SoundManager(){
-        laserSound.setVolume(0.6);
+        laserSound.setVolume(0.7);
         pickUp.setVolume(0.3);
-        asteroidKill.setVolume(0.2);
-        shipHit.setVolume(0.25);
+        asteroidKill.setVolume(0.3);
+        shipHit.setVolume(0.35);
         gameMusic.setVolume(0.2);
         startMusic.setVolume(0.7);
     }

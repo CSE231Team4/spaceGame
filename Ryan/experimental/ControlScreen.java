@@ -47,7 +47,7 @@ public class ControlScreen implements Screen {
         
         pause4.setAlignment(Pos.TOP_CENTER);
         pause4.setLayoutY(255);
-        printer("Q: PAUSE/UNPAUSE", 20, pause4);
+        printer("TAB: PAUSE/UNPAUSE", 20, pause4);
         
         pause5.setAlignment(Pos.TOP_CENTER);
         pause5.setLayoutY(295);

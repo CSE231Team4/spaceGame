@@ -1,30 +1,19 @@
 package spacex33;
 
 import java.awt.Dimension;
-import java.awt.Label;
 import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import javafx.animation.AnimationTimer;
-import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import java.util.ArrayList;
@@ -34,22 +23,11 @@ import java.util.logging.Logger;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.Border;
-import javafx.scene.media.AudioClip;
 import javafx.scene.shape.Rectangle;
-import static spacex33.GameOver.addTextLimiter;
 
 public class SpaceX33 extends Application {   
     private Scene gameScene;
@@ -104,8 +82,9 @@ public class SpaceX33 extends Application {
     private int window_height = 900;
     private double speed = 7; //speed of asteroids descending toward ship
     private int spawnCount = 0; //counts amount of asteroids spawned in
-    private double speedAdd = 0.05; //used in algorithm to calculate difficulty. speedAdd = 1/10 of spawnCount
-    private double spawnRate = 0.03; //spawn in speed of asteroids
+    private double speedAdd = 0.1; //used in algorithm to calculate difficulty. speedAdd = 1/10 of spawnCount
+    private double spawnRate = 0.5; //spawn in speed of asteroids
+    private double spawnAdd = 0.1;
     private int iframes = 0;
     private long istart = 0;
     private double powerSpawn = 0.002;
@@ -119,8 +98,11 @@ public class SpaceX33 extends Application {
     int backnum = 0;
     Timeline POWER_UP_TIME;
     Duration time_hold;
-    int[] scores = new int[101];
-    String[] initial = new String[101];
+    int[] scores = new int[21];
+    String[] initial = new String[21];
+    
+    private boolean newChunkSpawned = false;
+    private PathFinder pf = new PathFinder(shipObj, NUM_LANES);
     
     private STATE state = STATE.START;
 
@@ -208,7 +190,7 @@ public class SpaceX33 extends Application {
         
     }
     
-    private Node spawnAsteroid() {
+    /*private Node spawnAsteroid() {
         Asteroid ast = new Asteroid();
         
         astImg = ast.initGraphics(); //gets the graphic loaded in the Asteroid class
@@ -223,6 +205,26 @@ public class SpaceX33 extends Application {
         
 
         return astImg;
+    }*/
+    
+    private void spawnAsteroid(boolean[][] grid) {
+        for(int i = 0; i < pf.getY(); i++) {
+            for(int j = 0; j < pf.getX(); j++) {
+                if(grid[j][i] == false && Math.random() < spawnRate) {
+                    Asteroid ast = new Asteroid();
+                    astImg = ast.initGraphics(); //gets the graphic loaded in the Asteroid class
+
+                    int lane = j; //gets a lane number between 0-5
+
+                    int obs_location = ast.getEdgeGap() + lane * (ast.getWidth() + ast.getMidGap()); //formula for calculating the X coordinate of the obstacle
+                    astImg.setTranslateX(obs_location); //sets the x coordinate of the obstacle to obs_location
+                    astImg.setTranslateY(-50 - (i + 1) * ast.getWidth() * 2);
+                    root.getChildren().add(astImg); //adds the graphic for the asteroid to the root
+                    asteroids.add(astImg);
+                }
+            }
+        }
+        newChunkSpawned = true;
     }
     
     private void spawnShot() {
@@ -245,6 +247,7 @@ public class SpaceX33 extends Application {
         powerupImage.setX(powerup.getType());
         int plane = getLane();
         int p_location = powerup.getEdgeGap() + plane * (powerup.getWidth() + powerup.getMidGap());
+        powerupImage.setTranslateY(-window_height);
         powerupImage.setTranslateX(p_location);
         root.getChildren().add(powerupImage);
         
@@ -274,11 +277,19 @@ public class SpaceX33 extends Application {
             shotUpdate();
             refreshHUD();
 
-            rand_hold = Math.random();
-
-            if (rand_hold < spawnRate && rand_hold > 0.002) {
+            rand_hold = Math.random(); 
+            /*if (rand_hold < spawnRate && rand_hold > 0.002) {
                 asteroids.add(spawnAsteroid()); //randomly spawns an obstacle, and adds the graphic for the asteroid to the asteroid list
+            }*/
+            
+            if(asteroids.size() <= 5)
+                newChunkSpawned = false;
+
+            if(newChunkSpawned == false) {
+                    spawnAsteroid(pf.pathGen());
+                    newChunkSpawned = true;
             }
+
             if(rand_hold < powerSpawn && enableSlow == true){
                 powerups.add(spawnPowerup());
             }
@@ -301,11 +312,11 @@ public class SpaceX33 extends Application {
     private void asteroidUpdate(){
         for (Node asteroid : asteroids){
             asteroid.setTranslateY(asteroid.getTranslateY() + speed); //translates the asteroid down 12 pixels every update
-            //asteroid.setRotate(asteroid.getRotate() + speed);
             if(asteroid.getTranslateY() > window_height){
                 root.getChildren().remove(asteroid);
                 HUD.setScore(HUD.getScore() + 50);
                 toRemAst = asteroid;
+                spawnCount++;
             }
         }
         asteroids.remove(toRemAst);
@@ -314,7 +325,6 @@ public class SpaceX33 extends Application {
     private void powerupUpdate(){
         for (ImageView power : powerups){
             power.setTranslateY(power.getTranslateY() + speed); //translates the asteroid down 12 pixels every update
-            //asteroid.setRotate(asteroid.getRotate() + speed);
             if(power.getTranslateY() > window_height){
                 toRemPower = power;
                 root.getChildren().remove(power);
@@ -327,14 +337,14 @@ public class SpaceX33 extends Application {
         for(Node bg : background){
             bg.setTranslateY(bg.getTranslateY() + speed/3);
             
-            if(bg.getTranslateY() > window_height+10)
+            if(bg.getTranslateY() > window_height + 200)
                 bg.setTranslateY(0-window_height);
         }
         
         for(Node bg : farbackground){
             bg.setTranslateY(bg.getTranslateY() + speed/4);
             
-            if(bg.getTranslateY() > window_height)
+            if(bg.getTranslateY() > window_height + 90)
                 bg.setTranslateY(0-window_height);
         }
     }
@@ -342,7 +352,7 @@ public class SpaceX33 extends Application {
      private void shotUpdate() {
         for(ImageView shot : shots) {
             shot.setTranslateY(shot.getTranslateY() - 15);
-            if(shot.getTranslateY() < 15) {
+            if(shot.getTranslateY() < -50) {
                 toRemShot = shot;
                 root.getChildren().remove(shot);
             }
@@ -351,15 +361,12 @@ public class SpaceX33 extends Application {
     } 
     
     private void spawnUpdate(){
-        if (spawnRate < 2.0) {//sets limit on spawning
-            if (spawnCount == 25) { //initial condition to add to spawnRate
-                spawnRate = spawnRate + 0.005; //add to spawnRate if conditions are met
+        if (speed <= 20) {//sets limit on spawning
+            if (spawnCount >= 25) { //initial condition to add to spawnRate
+                spawnRate += spawnAdd; //add to spawnRate if conditions are met
                 spawnCount = 0; // reset spawn counter
                 speed += speedAdd;
-                /*if (speedAdd == 1) { //condition to add to speed of obsticles
-                    speed = speed + 5; //add 5 to speed of falling obsticles
-                    speedAdd = 0; //reset speed add counter
-                }*/
+                System.out.println(speed);
             }   
         }
     }
@@ -377,20 +384,21 @@ public class SpaceX33 extends Application {
                 shipObj.checkShipState();
                 iframes = 0;
                 if (isCollision(asteroid, shipDisplay)) { //checks for an intersection between the asteroid and the ship 
-                    iframes = 2000;
+                    iframes = 10000;
                     istart = System.currentTimeMillis();
                     root.getChildren().remove(asteroid);
                     sounds.playShipHit();
-                    
-                    //shipObj.setHealth(shipObj.getHealth()-1);
+
                     shipObj.setShipState();
               
                     HUD.hasHit();
                     if(HUD.numHearts() <= 0){
                         state = STATE.OVER;
                         enableShip = false;
+                        gameOver.setCurrentScore(HUD.getScore());
+                        gameOver.updateGameOver();
                         timer.stop(); //stops the timer so asteroids no longer spawn
-                        saveScore();
+                        //saveScore();
                         gameOverScene.getRoot().setVisible(true);
                         gameOverScene.getRoot().toFront();
                     }
@@ -437,6 +445,14 @@ public class SpaceX33 extends Application {
                     default: break;
                 }
             }
+            
+            for(Node asteroid: asteroids){
+                if(isCollision(power, asteroid)){
+                    toRemAst = asteroid;
+                    root.getChildren().remove(asteroid);
+                }
+            }
+            asteroids.remove(toRemAst);
         }
         powerups.remove(toRemPower);
     }
@@ -487,18 +503,19 @@ public class SpaceX33 extends Application {
             try {
                 while((line = br.readLine()) != null){
                     scores[i] = Integer.valueOf(line);
+                    gameOver.setMinScore(scores[i]);
                     if((line.equals("")) == false);
-                    i++;
+                    i++; 
                 }
                 
                 while((line2 = br2.readLine()) != null){
-                    initial[k] = line;
+                    initial[k] = line2;
                     if((line2.equals("")) == false);
                     k++;
                 }
                 
                 highscoreScreen.setLength(i);
-                if(i >= 100){
+                if(i >= 20){
                     i--; //i counts an extra time when leaving loop
                     k--;
                 }
@@ -568,9 +585,11 @@ public class SpaceX33 extends Application {
         speed = 7;
         spawnCount = 0;
         shotsLeft = 10;
-        speedAdd = 0.05;
-        spawnRate = 0.03; 
+        speedAdd = 0.1;
+        spawnAdd = 0.1;
+        spawnRate = 0.5; 
         
+        newChunkSpawned = false;
         iframes = 0;
         istart = 0;
         time_hold = null;
@@ -613,6 +632,8 @@ public class SpaceX33 extends Application {
     public void start(Stage stage) throws Exception {
         loadScore();
         setHighscores();
+        stage.getIcons().add(new Image("file:resource/Images/ship.png"));
+        stage.setTitle("SPACEX33");
         gameScene = new Scene(createContent()); //creates the game scene
         hudScene = new Scene(createHUD()); //creates the HUD overlay
         startScene = new Scene(createStartScreen());
@@ -666,7 +687,7 @@ public class SpaceX33 extends Application {
                     else if(state == STATE.GAME)
                         spawnShot();
                     break;
-                case Q:
+                case TAB:
                     if(state == STATE.GAME)
                         game_to_pause();
                         
@@ -678,8 +699,9 @@ public class SpaceX33 extends Application {
                     if(state == STATE.PAUSE)
                         pause_to_start();  
                     
-                    if(state == STATE.OVER)
+                    if(state == STATE.OVER){
                         over_to_start();
+                    }
                     break;
                 case C:
                     if(state == STATE.START || state == STATE.PAUSE)
@@ -778,6 +800,7 @@ public class SpaceX33 extends Application {
     
     //for going from the over scene to the start scene
     private void over_to_start(){
+        saveScore();
         reset();
         sounds.playButtonSelect();
         sounds.pauseGameMusic();

@@ -37,12 +37,13 @@ public class HighscoreScreen extends Node implements Screen {
     HBox no_scores = new HBox();
     ArrayList<HBox> scoreDisplay = new ArrayList<>();
     HBox remove = new HBox();
-    int[] scores = new int[10];
+    int[] scores = new int[20];
     File hs = new File("./resource/Text/highscores.txt");
-    String[] initials = new String[10];
+    String[] initials = new String[20];
     String format = "";
     int length = 0;
     int k = 0;
+    int lowestScore = 0;
     
     public HighscoreScreen(){
         super();
@@ -74,10 +75,11 @@ public class HighscoreScreen extends Node implements Screen {
             h.setAlignment(Pos.TOP_CENTER);
             h.setLayoutY(200 + 30*i);
                 
-            if(i == 9)
-                format = (i+1) + ".  " + String.format("%-12s", initials[i]).replace(' ', '.') + String.format("%-9s", " " + String.valueOf(scores[i]));
+            if(i >= 9)
+                format = (i+1) + ".  " + String.format("%-12s", initials[i]).replace(' ', '.') + String.format("%-10s", " " + String.valueOf(scores[i]));
             else
-                format = (i+1) + ".   " + String.format("%-12s", initials[i]).replace(' ', '.') + String.format("%-9s", " " + String.valueOf(scores[i]));
+                format = (i+1) + ".   " + String.format("%-12s", initials[i]).replace(' ', '.') + String.format("%-10s", " " + String.valueOf(scores[i]));
+           
             printer(format, 20, h);
         }
         //}
@@ -94,12 +96,6 @@ public class HighscoreScreen extends Node implements Screen {
                  initials[i] = init[i];
          }
          updateScores();
-    }
-    
-    public void getHighscores(){
-        String str = "";
-        for(int i = 0; i < length; i++)
-            System.out.println(scores[i]);
     }
     
     public void clearScores(){
@@ -122,10 +118,10 @@ public class HighscoreScreen extends Node implements Screen {
     }
     
     public void setLength(int l){
-        if(l < 10)
+        if(l < 20)
             length = l;
         else
-            length = 10;
+            length = 20;
     }
 
     @Override

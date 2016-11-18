@@ -89,7 +89,7 @@ public class HeadsUpDisplay extends Node implements Screen{
     }
     
     private void initAmmo(){
-        ammo.setFont(Font.loadFont("file:resource/Fonts/PressStart2P.ttf", 20));
+        ammo.setFont(Font.loadFont("file:resource/Fonts/PressStart2P.ttf", 25));
         ammo.setFill(Color.WHITE);
         ammo.setText("x" + String.format("%04d", shots));
         ammoText.getChildren().add(ammoIcon);
@@ -100,9 +100,9 @@ public class HeadsUpDisplay extends Node implements Screen{
     
     public void updateScore(){
         scoreChange++;
-        if(scoreChange % 3 == 0){
+        if(scoreChange % 2 == 0){
             if(score_val < 999999999)
-                score_val += 2;
+                score_val += 1;
             if(score_val > 999999999)
                 score_val = 999999999;
             score.setText("Score:" + String.format("%09d", score_val));

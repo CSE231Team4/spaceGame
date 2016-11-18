@@ -40,7 +40,7 @@ public class PauseScreen implements Screen {
         
         pause2.setAlignment(Pos.TOP_CENTER);
         pause2.setLayoutY(175);
-        printer("PRESS 'Q' TO RESUME", 20, pause2);
+        printer("PRESS 'TAB' TO RESUME", 20, pause2);
         //pauseScreen.getChildren().add(pause2);
         
         pause3.setAlignment(Pos.TOP_CENTER);

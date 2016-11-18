@@ -41,9 +41,12 @@ public class GameOver extends Node implements Screen {
     Pane gameOver = new Pane();
     HBox overMessage = new HBox();
     HBox restartMessage = new HBox();
+    HBox newHighscore = new HBox();
     HBox initials = new HBox();
     String init = null;
     TextField tf = new TextField();
+    int currentScore = 0;
+    int minScore = 0;
     
     public GameOver(){
         super();
@@ -51,8 +54,12 @@ public class GameOver extends Node implements Screen {
         overMessage.setAlignment(Pos.CENTER);
         printer("GAME OVER", 70, overMessage);
         
+        newHighscore.setAlignment(Pos.CENTER);
+        newHighscore.setTranslateY(100);
+        printer("NEW HIGHSCORE", 25, newHighscore);
+        
         initials.setAlignment(Pos.CENTER);
-        initials.setTranslateY(100);
+        initials.setTranslateY(140);
         printer("ENTER YOUR INITIALS", 20, initials);
         
         restartMessage.setAlignment(Pos.CENTER);
@@ -65,7 +72,7 @@ public class GameOver extends Node implements Screen {
         tf.setAlignment(Pos.CENTER);
         tf.setMaxWidth(200);
         tf.setTranslateX(250);
-        tf.setTranslateY(600);
+        tf.setTranslateY(630);
         tf.setFont(Font.loadFont("file:resource/Fonts/PressStart2P.ttf", 40));
         addTextLimiter(tf, 3);
 
@@ -77,6 +84,7 @@ public class GameOver extends Node implements Screen {
                 if(ke.getCode().equals(KeyCode.ENTER)){
                     init = tf.getText();
                     gameOver.getChildren().remove(initials);
+                    gameOver.getChildren().remove(newHighscore);
                     gameOver.getChildren().remove(tf);
                     restartMessage.setVisible(true);
                 }
@@ -104,15 +112,34 @@ public class GameOver extends Node implements Screen {
 
         gameOver.getChildren().add(tf);
         gameOver.getChildren().add(initials);
+        gameOver.getChildren().add(newHighscore);
         restartMessage.setVisible(false);
     }
     
     public String getInitials(){
-        return "AAA";
+        return init;
+    }
+    
+    public void setCurrentScore(int curScore){
+        currentScore = curScore;
+    }
+    
+    public void setMinScore(int s){
+        minScore = s;
     }
     
     public void restartMessage(){
         restartMessage.setVisible(true);
+    }
+    
+    public void updateGameOver(){
+        if(currentScore < minScore){
+            gameOver.getChildren().remove(initials);
+            gameOver.getChildren().remove(newHighscore);
+            gameOver.getChildren().remove(tf);
+            restartMessage.setVisible(true);
+            
+        }
     }
     
     public static void addTextLimiter(final TextField tf, final int maxLength) {
@@ -122,7 +149,6 @@ public class GameOver extends Node implements Screen {
         
         if (tf.getText().length() > maxLength) {
             String s = tf.getText().substring(0, maxLength);
-            s = s.toUpperCase();
             tf.setText(s);
         }
     });

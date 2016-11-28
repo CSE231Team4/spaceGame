@@ -83,8 +83,8 @@ public class SpaceX33 extends Application {
     private double speed = 7; //speed of asteroids descending toward ship
     private int spawnCount = 0; //counts amount of asteroids spawned in
     private double speedAdd = 0.1; //used in algorithm to calculate difficulty. speedAdd = 1/10 of spawnCount
-    private double spawnRate = 0.5; //spawn in speed of asteroids
-    private double spawnAdd = 0.1;
+    private double spawnRate = 0.3; //spawn in speed of asteroids
+    private double spawnAdd = 0.05;
     private int iframes = 0;
     private long istart = 0;
     private double powerSpawn = 0.002;
@@ -94,7 +94,7 @@ public class SpaceX33 extends Application {
     //private Node toRemSlow = new SlowTime();
     private Node toRemPower = new Powerup();
     private Node toRemShot = new Rectangle();
-    private int shotsLeft = 10;
+    private int shotsLeft = 5;
     int backnum = 0;
     Timeline POWER_UP_TIME;
     Duration time_hold;
@@ -384,7 +384,7 @@ public class SpaceX33 extends Application {
                 shipObj.checkShipState();
                 iframes = 0;
                 if (isCollision(asteroid, shipDisplay)) { //checks for an intersection between the asteroid and the ship 
-                    iframes = 10000;
+                    iframes = 7000;
                     istart = System.currentTimeMillis();
                     root.getChildren().remove(asteroid);
                     sounds.playShipHit();
@@ -436,7 +436,7 @@ public class SpaceX33 extends Application {
                         break;
                     case 2:
                         if(shotsLeft < 9999)
-                            shotsLeft += 10;
+                            shotsLeft += 5;
                         if(shotsLeft >= 9999)
                             shotsLeft = 9999;
                         HUD.setShots(shotsLeft);   
@@ -494,7 +494,6 @@ public class SpaceX33 extends Application {
         k = 1;
         scores[0] = HUD.getScore();
         initial[0] = gameOver.getInitials();
-        
         try {
             br = new BufferedReader(new FileReader(highscores));
             br2 = new BufferedReader(new FileReader(initials));
@@ -514,8 +513,11 @@ public class SpaceX33 extends Application {
                     k++;
                 }
                 
+                if(i < 20)
+                    gameOver.setMinScore(0);
+                
                 highscoreScreen.setLength(i);
-                if(i >= 20){
+                if(i > 20){
                     i--; //i counts an extra time when leaving loop
                     k--;
                 }
@@ -584,10 +586,10 @@ public class SpaceX33 extends Application {
         root.getChildren().remove(HUD);
         speed = 7;
         spawnCount = 0;
-        shotsLeft = 10;
+        shotsLeft = 5;
         speedAdd = 0.1;
-        spawnAdd = 0.1;
-        spawnRate = 0.5; 
+        spawnAdd = 0.05;
+        spawnRate = 0.3; 
         
         newChunkSpawned = false;
         iframes = 0;
@@ -690,9 +692,12 @@ public class SpaceX33 extends Application {
                 case TAB:
                     if(state == STATE.GAME)
                         game_to_pause();
+                    else if(state == STATE.SCORE)
+                        exit_highscores();
+                    else if(state == STATE.CONTROL)
+                        exit_control();
                         
-                    else
-                        if(state == STATE.PAUSE)
+                    else if(state == STATE.PAUSE)
                             pause_to_game();
                     break;
                 case R:
@@ -706,16 +711,16 @@ public class SpaceX33 extends Application {
                 case C:
                     if(state == STATE.START || state == STATE.PAUSE)
                         to_control();
-                    else
+                    /*else
                         if(state == STATE.CONTROL)
-                            exit_control();
+                            exit_control();*/
                     break;
                 case H:
                     if(state == STATE.START)
                         to_highscores();
-                    else
+                    /*else
                         if(state == STATE.SCORE)
-                            exit_highscores();
+                            exit_highscores();*/
                     break;
                 case ESCAPE:
                     if(state == STATE.START || state == STATE.PAUSE){

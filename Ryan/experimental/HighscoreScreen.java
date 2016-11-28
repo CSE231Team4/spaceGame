@@ -34,6 +34,7 @@ public class HighscoreScreen extends Node implements Screen {
     Pane highscore = new Pane();
     Rectangle bck = new Rectangle();
     HBox leaderboard = new HBox();
+    HBox ret = new HBox();
     HBox no_scores = new HBox();
     ArrayList<HBox> scoreDisplay = new ArrayList<>();
     HBox remove = new HBox();
@@ -61,6 +62,24 @@ public class HighscoreScreen extends Node implements Screen {
         leaderboard.getChildren().add(hold_text);
         highscore.getChildren().add(leaderboard);
         
+        ret.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+        ret.setAlignment(Pos.BOTTOM_CENTER);
+        ret.setLayoutY(-50);
+        Text ht = new Text("PRESS TAB TO RETURN");
+        ht.setFont(Font.loadFont("file:resource/Fonts/PressStart2P.ttf", 20));
+        ht.setFill(Color.WHITE);
+        ret.getChildren().add(ht);
+        highscore.getChildren().add(ret);
+        
+        no_scores.setPrefSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+        no_scores.setAlignment(Pos.TOP_CENTER);
+        no_scores.setLayoutY(200);
+        Text ht2 = new Text("NO HIGHSCORES");
+        ht2.setFont(Font.loadFont("file:resource/Fonts/PressStart2P.ttf", 20));
+        ht2.setFill(Color.WHITE);
+        no_scores.getChildren().add(ht2);
+        highscore.getChildren().add(no_scores);
+        
         
         
         
@@ -69,20 +88,22 @@ public class HighscoreScreen extends Node implements Screen {
     
     public void updateScores(){
         clearScores();
-        //if(length >= 1){
         for(int i = 0; i < length; i++){
-            HBox h = new HBox();
-            h.setAlignment(Pos.TOP_CENTER);
-            h.setLayoutY(200 + 30*i);
+            if(initials[i] != null){
+                if(no_scores.isVisible())
+                    no_scores.setVisible(false);
+                HBox h = new HBox();
+                h.setAlignment(Pos.TOP_CENTER);
+                h.setLayoutY(200 + 30*i);
+                if(i >= 9)
+                    format = (i+1) + ".  " + String.format("%-12s", initials[i]).replace(' ', '.') + String.format("%-10s", " " + String.valueOf(scores[i]));
+                else
+                    format = (i+1) + ".   " + String.format("%-12s", initials[i]).replace(' ', '.') + String.format("%-10s", " " + String.valueOf(scores[i]));
+
+                printer(format, 20, h);
+            }
                 
-            if(i >= 9)
-                format = (i+1) + ".  " + String.format("%-12s", initials[i]).replace(' ', '.') + String.format("%-10s", " " + String.valueOf(scores[i]));
-            else
-                format = (i+1) + ".   " + String.format("%-12s", initials[i]).replace(' ', '.') + String.format("%-10s", " " + String.valueOf(scores[i]));
-           
-            printer(format, 20, h);
         }
-        //}
         
         highscore.getChildren().addAll(scoreDisplay);
     }

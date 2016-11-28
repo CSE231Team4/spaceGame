@@ -13,6 +13,7 @@ import com.sun.javafx.sg.prism.NGNode;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -74,6 +75,7 @@ public class GameOver extends Node implements Screen {
         tf.setTranslateX(250);
         tf.setTranslateY(630);
         tf.setFont(Font.loadFont("file:resource/Fonts/PressStart2P.ttf", 40));
+        
         addTextLimiter(tf, 3);
 
         gameOver.getChildren().add(tf);
@@ -81,7 +83,7 @@ public class GameOver extends Node implements Screen {
         tf.setOnKeyPressed(new EventHandler<KeyEvent>(){
             @Override
             public void handle(KeyEvent ke){
-                if(ke.getCode().equals(KeyCode.ENTER)){
+                if(ke.getCode().equals(KeyCode.ENTER) && isValid(tf.getText())){
                     init = tf.getText();
                     gameOver.getChildren().remove(initials);
                     gameOver.getChildren().remove(newHighscore);
@@ -133,6 +135,7 @@ public class GameOver extends Node implements Screen {
     }
     
     public void updateGameOver(){
+        System.out.println(currentScore + " " + minScore);
         if(currentScore < minScore){
             gameOver.getChildren().remove(initials);
             gameOver.getChildren().remove(newHighscore);
@@ -140,6 +143,17 @@ public class GameOver extends Node implements Screen {
             restartMessage.setVisible(true);
             
         }
+    }
+    
+    public boolean isValid(String s){
+        if(s.length() < 3)
+            return false;
+        
+        for(int i = 0; i < s.length(); i++){
+            if(!Character.isAlphabetic(s.charAt(i)))
+                return false;
+        }
+        return true;
     }
     
     public static void addTextLimiter(final TextField tf, final int maxLength) {

@@ -14,46 +14,52 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import static spacex33.Screen.WINDOW_HEIGHT;
 import static spacex33.Screen.WINDOW_WIDTH;
-
 /**
  *
- * @author asdas
+ * @author Andrew
  */
-public class PauseScreen implements Screen {
-    Rectangle bck = new Rectangle();
+public class ControlScreen implements Screen {
+ Rectangle bck = new Rectangle();
     HBox pause = new HBox();
     HBox pause2 = new HBox();
     HBox pause3 = new HBox();
     HBox pause4 = new HBox();
-    Pane pauseScreen = new Pane();
+    HBox pause5 = new HBox();
+    HBox pause6 = new HBox();
+    Pane controlScreen = new Pane();
     
-    public PauseScreen(){
+    public ControlScreen(){
         super();
         bck.setHeight(WINDOW_HEIGHT + 50);
         bck.setWidth(WINDOW_WIDTH + 50);
         bck.setFill(Color.BLACK);
-        pauseScreen.getChildren().add(bck);
+        controlScreen.getChildren().add(bck);
         pause.setAlignment(Pos.TOP_CENTER);
         pause.setLayoutY(100);
-        printer("GAME IS PAUSED", 45, pause);
-        //pauseScreen.getChildren().add(pause);
+        printer("CONTROLS", 45, pause);
         
         pause2.setAlignment(Pos.TOP_CENTER);
         pause2.setLayoutY(175);
-        printer("PRESS 'TAB' TO RESUME", 20, pause2);
-        //pauseScreen.getChildren().add(pause2);
+        printer("D or →: MOVE RIGHT", 20, pause2);
         
         pause3.setAlignment(Pos.TOP_CENTER);
         pause3.setLayoutY(215);
-        printer("PRESS 'R' TO RESTART", 20, pause3);
+        printer("A or ←: MOVE LEFT", 20, pause3);
         
         pause4.setAlignment(Pos.TOP_CENTER);
         pause4.setLayoutY(255);
-        printer("PRESS 'C' FOR CONTROLS", 20, pause4);
+        printer("TAB: PAUSE/UNPAUSE", 20, pause4);
+        
+        pause5.setAlignment(Pos.TOP_CENTER);
+        pause5.setLayoutY(295);
+        printer("SPACE: SHOOT", 20, pause5);
+        
+        pause6.setLayoutY(800);
+        printer("PRESS TAB TO RETURN", 20, pause6);
     }
     
-    public Pane initPauseScreen(){
-        return pauseScreen;
+    public Pane initControlScreen(){
+        return controlScreen;
     }
     
     public void printer(String print, int size, HBox location) {
@@ -63,6 +69,6 @@ public class PauseScreen implements Screen {
         hold_text.setFill(Color.WHITE);
         location.setAlignment(Pos.TOP_CENTER);
         location.getChildren().add(hold_text);
-        pauseScreen.getChildren().add(location);
+        controlScreen.getChildren().add(location);
     }
-}
+} 
